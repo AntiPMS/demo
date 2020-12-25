@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NetApi</name>
+    </assembly>
+    <members>
+        <member name="T:NetApi.Controllers.UsersController">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.#ctor(NetApi.Models.NetApiContext,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="_context"></param>
+            <param name="_env"></param>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.Demo">
+            <summary>
+            demo
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.GetEnviroment">
+            <summary>
+            获取当前环境
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.GetUsers">
+            <summary>
+            获取用户列表
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
