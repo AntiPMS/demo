@@ -272,4 +272,6 @@ Api/NetApi/bin
 Api/NetApi/obj
 Api/NetApi/appsettings.Production.json
 Api/NetApi/NetApi.csproj.user
+Api/NetApi/.vs/NetApi/DesignTimeBuild
+Api/NetApi/.vs/NetApi/v16
 
