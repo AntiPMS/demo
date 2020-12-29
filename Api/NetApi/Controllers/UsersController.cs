@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using NetApi.Business;
+using NetApi.Common;
 using NetApi.Models;
 using System;
 using System.Collections.Generic;
@@ -16,36 +17,15 @@ namespace NetApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private Users us;
+        private Users _us;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="_context"></param>
-        /// <param name="_env"></param>
-        public UsersController(NetApiContext _context, IWebHostEnvironment _env)
+        /// <param name="context"></param>
+        public UsersController(NetApiContext context)
         {
-            us = new Users(_context, _env);
-        }
-
-        /// <summary>
-        /// demo
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public string Demo()
-        {
-            return "Hello World!";
-        }
-
-        /// <summary>
-        /// 获取当前环境
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public string GetEnviroment()
-        {
-            return us.GetEnviroment();
+            _us = new Users(context);
         }
 
         /// <summary>
@@ -53,9 +33,9 @@ namespace NetApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public List<users> GetUsers()
+        public ApiResult GetUsers()
         {
-            return us.GetUsers();
+            return _us.GetUsers();
         }
     }
 }

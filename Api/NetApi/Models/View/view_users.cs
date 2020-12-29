@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace NetApi.Models
+namespace NetApi.Models.View
 {
-    public partial class users
+    /// <summary>
+    /// 用户查询视图
+    /// </summary>
+    public class view_users
     {
-        [Key]
         public int Id { get; set; }
-        [Column(TypeName = "varchar(100)")]
         public string Account { get; set; }
-        [Column(TypeName = "varchar(100)")]
-        public string Pwd { get; set; }
-        [Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
         public sbyte? Sex { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? Birthday { get; set; }
-        [Column(TypeName = "varchar(1000)")]
         public string Remarks { get; set; }
         public int? CompanyId { get; set; }
         public int? ProjectId { get; set; }

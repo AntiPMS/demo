@@ -4,35 +4,57 @@
         <name>NetApi</name>
     </assembly>
     <members>
+        <member name="T:NetApi.Common.ApiResult">
+            <summary>
+            通用Api返回模型 
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.ApiResult.status">
+            <summary>
+            返回状态 https://httpstatuses.com/
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.ApiResult.msg">
+            <summary>
+            提示信息
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.ApiResult.content">
+            <summary>
+            返回内容 
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.ApiResult.totalCount">
+            <summary>
+            返回总数目
+            </summary>
+        </member>
+        <member name="T:NetApi.Common.EnumStatus">
+            <summary>
+            状态枚举类
+            </summary>
+        </member>
         <member name="T:NetApi.Controllers.UsersController">
             <summary>
             User
             </summary>
         </member>
-        <member name="M:NetApi.Controllers.UsersController.#ctor(NetApi.Models.NetApiContext,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+        <member name="M:NetApi.Controllers.UsersController.#ctor(NetApi.Models.NetApiContext)">
             <summary>
             构造函数
             </summary>
-            <param name="_context"></param>
-            <param name="_env"></param>
-        </member>
-        <member name="M:NetApi.Controllers.UsersController.Demo">
-            <summary>
-            demo
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:NetApi.Controllers.UsersController.GetEnviroment">
-            <summary>
-            获取当前环境
-            </summary>
-            <returns></returns>
+            <param name="context"></param>
         </member>
         <member name="M:NetApi.Controllers.UsersController.GetUsers">
             <summary>
             获取用户列表
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:NetApi.Models.View.view_users">
+            <summary>
+            用户查询视图
+            </summary>
         </member>
     </members>
 </doc>

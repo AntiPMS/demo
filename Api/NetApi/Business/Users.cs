@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using NetApi.Common;
 using NetApi.Models;
+using NetApi.Models.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,25 +13,36 @@ namespace NetApi.Business
 
     public class Users
     {
-        private readonly NetApiContext context;
-        private readonly IWebHostEnvironment env;
+        private readonly NetApiContext _context;
 
         #region  构造函数,注入依赖.
-        public Users(NetApiContext _context, IWebHostEnvironment _env)
+        public Users(NetApiContext context)
         {
-            context = _context;
-            env = _env;
+            _context = context;
         }
         #endregion
 
-        public string GetEnviroment()
+        public ApiResult GetUsers()
         {
-            return env.EnvironmentName;
-        }
-
-        public List<users> GetUsers()
-        {
-            return context.users.ToList();
+            ApiResult ast = new ApiResult() { status = EnumStatus.OK, totalCount = 0 };
+            try
+            {
+                var data = _context.users.Select(m => new
+                {
+                    m.Id,
+                    m.Account,
+                    m.Name,
+                    m.Remarks
+                }).ToList();
+                ast.content = data;
+                ast.totalCount = data.Count;
+            }
+            catch (Exception e)
+            {
+                ast.status = EnumStatus.InternalServerError;
+                ast.msg = e.ToString();
+            }
+            return ast;
         }
     }
 }
