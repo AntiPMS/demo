@@ -99,16 +99,184 @@
             GatewayTimeout
             </summary>
         </member>
+        <member name="P:NetApi.Common.IJwtAuthManager.UsersRefreshTokensReadOnlyDictionary">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NetApi.Common.IJwtAuthManager.GenerateTokens(System.String,System.Security.Claims.Claim[],System.DateTime)">
+            <summary>
+            生成token
+            </summary>
+            <param name="account"></param>
+            <param name="claims"></param>
+            <param name="now"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Common.IJwtAuthManager.Refresh(System.String,System.String,System.DateTime)">
+            <summary>
+            
+            </summary>
+            <param name="refreshToken"></param>
+            <param name="accessToken"></param>
+            <param name="now"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Common.IJwtAuthManager.RemoveExpiredRefreshTokens(System.DateTime)">
+            <summary>
+             清除入参时间前的token
+            </summary>
+            <param name="now"></param>
+        </member>
+        <member name="M:NetApi.Common.IJwtAuthManager.RemoveRefreshTokenByAccount(System.String)">
+            <summary>
+            清除入参帐号的所有token
+            </summary>
+            <param name="account"></param>
+        </member>
+        <member name="M:NetApi.Common.IJwtAuthManager.DecodeJwtToken(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NetApi.Common.JwtAuthManager">
+            <summary>
+            Jwt工具类
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.JwtAuthManager.UsersRefreshTokensReadOnlyDictionary">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NetApi.Common.JwtAuthManager.#ctor(NetApi.Common.JwtTokenConfig)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="jwtTokenConfig"></param>
+        </member>
+        <member name="M:NetApi.Common.JwtAuthManager.RemoveExpiredRefreshTokens(System.DateTime)">
+            <summary>
+             清除入参时间前的token
+            </summary>
+            <param name="now"></param>
+        </member>
+        <member name="M:NetApi.Common.JwtAuthManager.RemoveRefreshTokenByAccount(System.String)">
+            <summary>
+            清除入参帐号的所有token
+            </summary>
+            <param name="account"></param>
+        </member>
+        <member name="M:NetApi.Common.JwtAuthManager.GenerateTokens(System.String,System.Security.Claims.Claim[],System.DateTime)">
+            <summary>
+            生成token
+            </summary>
+            <param name="account"></param>
+            <param name="claims"></param>
+            <param name="now"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Common.JwtAuthManager.Refresh(System.String,System.String,System.DateTime)">
+            <summary>
+            获取二次授权token
+            </summary>
+            <param name="refreshToken"></param>
+            <param name="accessToken"></param>
+            <param name="now"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Common.JwtAuthManager.DecodeJwtToken(System.String)">
+            <summary>
+            解码token串
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NetApi.Common.RefreshToken">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.RefreshToken.Account">
+            <summary>
+            自定义保存进token的字段:用户账号
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.RefreshToken.TokenString">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.RefreshToken.ExpireAt">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NetApi.Common.JwtAuthResult">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.JwtAuthResult.AccessToken">
+            <summary>
+            当前token
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.JwtAuthResult.RefreshToken">
+            <summary>
+            二次请求刷新的token
+            </summary>
+        </member>
+        <member name="T:NetApi.Common.JwtTokenConfig">
+            <summary>
+            Jwt配置类
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.JwtTokenConfig.Secret">
+            <summary>
+            密钥
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.JwtTokenConfig.Issuer">
+            <summary>
+            发行人
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.JwtTokenConfig.Audience">
+            <summary>
+            接收人
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.JwtTokenConfig.AccessTokenExpiration">
+            <summary>
+            当前toekn时效(分钟)
+            </summary>
+        </member>
+        <member name="P:NetApi.Common.JwtTokenConfig.RefreshTokenExpiration">
+            <summary>
+            二次token时效(分钟)
+            </summary>
+        </member>
         <member name="T:NetApi.Controllers.UsersController">
             <summary>
             User
             </summary>
         </member>
-        <member name="M:NetApi.Controllers.UsersController.#ctor(NetApi.Models.NetApiContext)">
+        <member name="M:NetApi.Controllers.UsersController.#ctor(NetApi.Models.NetApiContext,NetApi.Common.IJwtAuthManager)">
             <summary>
             构造函数
             </summary>
             <param name="context"></param>
+            <param name="jwtAuthManager"></param>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.Token(NetApi.Models.View.userlogin)">
+            <summary>
+            token
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
         </member>
         <member name="M:NetApi.Controllers.UsersController.GetUsers">
             <summary>
@@ -116,10 +284,45 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:NetApi.Controllers.UsersController.Test">
+            <summary>
+            test
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:NetApi.Models.View.view_users">
             <summary>
             用户查询视图
             </summary>
+        </member>
+        <member name="T:NetApi.Startup">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NetApi.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="P:NetApi.Startup.Configuration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NetApi.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:NetApi.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+             This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
         </member>
     </members>
 </doc>
