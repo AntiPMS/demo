@@ -13,10 +13,11 @@
 ## 用法(先打开cmd)
 1. 初始化数据库并插入数据
    + cd到sql脚本目录 `cd Document/NetApiModel`
-   + 创建表数据 `mysql -u root -p NetApi<CreateDataBase.sql`
-   + 插入初始数据 `mysql -u root -p NetApi<InsertData.sql`
+   + 创建表数据 `mysql -uroot -p密码 NetApi<CreateDataBase.sql`
+   + 插入初始数据 `mysql -uroot -p密码 NetApi<InsertData.sql`
 2. 启动项目
    + 进入api项目目录 `cd Api/NetApi`
    + 运行net项目`dotnet run`
 3. 浏览器访问Api
    + [本地Api地址](http://localhost:5000/swagger/index.html)
+   + [线上Api地址(main分支)](http://api.qinko.club/swagger/index.html)
