@@ -34,6 +34,71 @@
             状态枚举类
             </summary>
         </member>
+        <member name="F:NetApi.Common.EnumStatus.OK">
+            <summary>
+            OK
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.BadRequest">
+            <summary>
+            BadRequest
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.Unauthorized">
+            <summary>
+            Unauthorized
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.PaymentRequired">
+            <summary>
+            PaymentRequired
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.Forbidden">
+            <summary>
+            Forbidden
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.NotFound">
+            <summary>
+            NotFound
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.MethodNotAllowed">
+            <summary>
+            MethodNotAllowed
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.NotAcceptable">
+            <summary>
+            NotAcceptable
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.InternalServerError">
+            <summary>
+            InternalServerError
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.NotImplemented">
+            <summary>
+            NotImplemented
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.BadGateway">
+            <summary>
+            BadGateway
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.ServiceUnavailable">
+            <summary>
+            ServiceUnavailable
+            </summary>
+        </member>
+        <member name="F:NetApi.Common.EnumStatus.GatewayTimeout">
+            <summary>
+            GatewayTimeout
+            </summary>
+        </member>
         <member name="T:NetApi.Controllers.UsersController">
             <summary>
             User

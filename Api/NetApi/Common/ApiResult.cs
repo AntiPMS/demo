@@ -37,11 +37,15 @@ namespace NetApi.Common
     /// </summary>
     public enum EnumStatus
     {
+        /// <summary>
+        /// OK
+        /// </summary>
         OK = 200,
-        Created = 201,
-        Accepted = 202,
-        NonAuthoritativeInformation = 203,
-        NoContent = 204,
+
+        //Created = 201,
+        //Accepted = 202,
+        //NonAuthoritativeInformation = 203,
+        //NoContent = 204,
         //ResetContent = 205,
         //PartialContent = 206,
         //MultiStatus = 207,
@@ -57,13 +61,41 @@ namespace NetApi.Common
         //TemporaryRedirect = 307,
         //PermanentRedirect = 308,
 
+        /// <summary>
+        /// BadRequest
+        /// </summary>
         BadRequest = 400,
+
+        /// <summary>
+        /// Unauthorized
+        /// </summary>
         Unauthorized = 401,
+
+        /// <summary>
+        /// PaymentRequired
+        /// </summary>
         PaymentRequired = 402,
+
+        /// <summary>
+        /// Forbidden
+        /// </summary>
         Forbidden = 403,
+
+        /// <summary>
+        /// NotFound
+        /// </summary>
         NotFound = 404,
+
+        /// <summary>
+        /// MethodNotAllowed
+        /// </summary>
         MethodNotAllowed = 405,
+
+        /// <summary>
+        /// NotAcceptable
+        /// </summary>
         NotAcceptable = 406,
+
         //ProxyAuthenticationRequired = 407,
         //RequestTimeout = 408,
         //Conflict = 409,
@@ -88,11 +120,31 @@ namespace NetApi.Common
         //UnavailableForLegalReasons = 451,
         //ClientClosedRequest = 499,
 
+        /// <summary>
+        /// InternalServerError
+        /// </summary>
         InternalServerError = 500,
+
+        /// <summary>
+        /// NotImplemented
+        /// </summary>
         NotImplemented = 501,
+
+        /// <summary>
+        /// BadGateway
+        /// </summary>
         BadGateway = 502,
+
+        /// <summary>
+        /// ServiceUnavailable
+        /// </summary>
         ServiceUnavailable = 503,
+
+        /// <summary>
+        /// GatewayTimeout
+        /// </summary>
         GatewayTimeout = 504,
+
         //HTTPVersionNotSupported = 505,
         //VariantAlsoNegotiates = 506,
         //InsufficientStorage = 507,
