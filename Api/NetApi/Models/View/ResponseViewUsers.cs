@@ -8,7 +8,7 @@ namespace NetApi.Models.View
     /// <summary>
     /// 用户查询视图
     /// </summary>
-    public class view_users
+    public class ResponseViewUsers
     {
         public int Id { get; set; }
         public string Account { get; set; }

@@ -79,7 +79,7 @@ namespace NetApi
                     ValidAudience = jwtTokenConfig.Audience,
                     ValidateAudience = true,
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(1)
+                    ClockSkew = TimeSpan.FromMinutes(jwtTokenConfig.RefreshTokenExpiration)
                 };
             });
 
@@ -104,7 +104,7 @@ namespace NetApi
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "NetApi v1"));
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

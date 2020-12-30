@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NetApi.Models.View
 {
-    public class userlogin
+    public class RequestViewUserlogin
     {
         public string Account { get; set; }
         public string Pwd { get; set; }

@@ -24,7 +24,7 @@ namespace NetApi.Business
 
         public ApiResult GetUsers()
         {
-            ApiResult ast = new ApiResult() { status = EnumStatus.OK, totalCount = 0 };
+            ApiResult result = new ApiResult() { status = EnumStatus.OK, totalCount = 0 };
             try
             {
                 var data = _context.users.Select(m => new
@@ -34,15 +34,15 @@ namespace NetApi.Business
                     m.Name,
                     m.Remarks
                 }).ToList();
-                ast.content = data;
-                ast.totalCount = data.Count;
+                result.content = data;
+                result.totalCount = data.Count;
             }
             catch (Exception e)
             {
-                ast.status = EnumStatus.InternalServerError;
-                ast.msg = e.ToString();
+                result.status = EnumStatus.InternalServerError;
+                result.msg = e.ToString();
             }
-            return ast;
+            return result;
         }
     }
 }

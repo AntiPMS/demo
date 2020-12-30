@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace NetApi.Common
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IJwtAuthManager
     {
         /// <summary>
@@ -23,35 +26,33 @@ namespace NetApi.Common
         /// <summary>
         /// 生成token
         /// </summary>
-        /// <param name="account"></param>
+        /// <param name="user"></param>
         /// <param name="claims"></param>
-        /// <param name="now"></param>
         /// <returns></returns>
-        JwtAuthResult GenerateTokens(string account, Claim[] claims, DateTime now);
+        JwtAuthResult GenerateTokens(TokenUser user, Claim[] claims);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="refreshToken"></param>
         /// <param name="accessToken"></param>
-        /// <param name="now"></param>
         /// <returns></returns>
-        JwtAuthResult Refresh(string refreshToken, string accessToken, DateTime now);
+        JwtAuthResult Refresh(string refreshToken, string accessToken);
 
         /// <summary>
-        ///  清除入参时间前的token
+        ///  按时间清除所有token
         /// </summary>
-        /// <param name="now"></param>
+        /// <param name="now">截止时间</param>
         void RemoveExpiredRefreshTokens(DateTime now);
 
         /// <summary>
-        /// 清除入参帐号的所有token
+        /// 按用户Id清除所有token
         /// </summary>
-        /// <param name="account"></param>
-        void RemoveRefreshTokenByAccount(string account);
+        /// <param name="userId">用户Id</param>
+        void RemoveRefreshTokenByAccount(string userId);
 
         /// <summary>
-        /// 
+        /// 解析token
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -99,10 +100,10 @@ namespace NetApi.Common
         /// <summary>
         /// 清除入参帐号的所有token
         /// </summary>
-        /// <param name="account"></param>
-        public void RemoveRefreshTokenByAccount(string account)
+        /// <param name="userId"></param>
+        public void RemoveRefreshTokenByAccount(string userId)
         {
-            var refreshTokens = _usersRefreshTokens.Where(x => x.Value.Account == account).ToList();
+            var refreshTokens = _usersRefreshTokens.Where(x => x.Value.User.Id == userId).ToList();
             foreach (var refreshToken in refreshTokens)
             {
                 _usersRefreshTokens.TryRemove(refreshToken.Key, out _);
@@ -112,12 +113,12 @@ namespace NetApi.Common
         /// <summary>
         /// 生成token
         /// </summary>
-        /// <param name="account"></param>
+        /// <param name="User"></param>
         /// <param name="claims"></param>
-        /// <param name="now"></param>
         /// <returns></returns>
-        public JwtAuthResult GenerateTokens(string account, Claim[] claims, DateTime now)
+        public JwtAuthResult GenerateTokens(TokenUser User, Claim[] claims)
         {
+            var now = DateTime.Now;
             var shouldAddAudienceClaim = string.IsNullOrWhiteSpace(claims?.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Aud)?.Value);
             var jwtToken = new JwtSecurityToken(
                 _jwtTokenConfig.Issuer,
@@ -129,7 +130,7 @@ namespace NetApi.Common
 
             var refreshToken = new RefreshToken
             {
-                Account = account,
+                User = User,
                 TokenString = GenerateRefreshTokenString(),
                 ExpireAt = now.AddMinutes(_jwtTokenConfig.RefreshTokenExpiration)
             };
@@ -147,31 +148,39 @@ namespace NetApi.Common
         /// </summary>
         /// <param name="refreshToken"></param>
         /// <param name="accessToken"></param>
-        /// <param name="now"></param>
         /// <returns></returns>
-        public JwtAuthResult Refresh(string refreshToken, string accessToken, DateTime now)
+        public JwtAuthResult Refresh(string refreshToken, string accessToken)
         {
+            var now = DateTime.Now;
             var (principal, jwtToken) = DecodeJwtToken(accessToken);
             if (jwtToken == null || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature))
             {
                 throw new SecurityTokenException("Invalid token");
             }
 
-            var account = principal.Identity.Name;
             if (!_usersRefreshTokens.TryGetValue(refreshToken, out var existingRefreshToken))
             {
                 throw new SecurityTokenException("Invalid token");
             }
-            if (existingRefreshToken.Account != account || existingRefreshToken.ExpireAt < now)
+
+            #region 验证解析后UserId的是否匹配缓存
+            var decodeUserId = principal.FindFirst("Id").Value;
+            if (existingRefreshToken.User.Id != decodeUserId || existingRefreshToken.ExpireAt < now)
             {
                 throw new SecurityTokenException("Invalid token");
             }
-
-            return GenerateTokens(account, principal.Claims.ToArray(), now); // need to recover the original claims
+            #endregion
+            var tokenUser = new TokenUser()
+            {
+                Id = principal.FindFirst("Id").Value,
+                Account = principal.FindFirst("Account").Value,
+                Name = principal.FindFirst("Name").Value,
+            };
+            return GenerateTokens(tokenUser, principal.Claims.ToArray()); // need to recover the original claims
         }
 
         /// <summary>
-        /// 解码token串
+        /// 解析token
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -192,7 +201,7 @@ namespace NetApi.Common
                         ValidAudience = _jwtTokenConfig.Audience,
                         ValidateAudience = true,
                         ValidateLifetime = true,
-                        ClockSkew = TimeSpan.FromMinutes(1)
+                        ClockSkew = TimeSpan.FromMinutes(_jwtTokenConfig.RefreshTokenExpiration)
                     },
                     out var validatedToken);
             return (principal, validatedToken as JwtSecurityToken);
@@ -210,14 +219,25 @@ namespace NetApi.Common
     /// <summary>
     /// 
     /// </summary>
+    public class TokenUser
+    {
+        public string Id { get; set; }
+        public string Account { get; set; }
+        public string Name { get; set; }
+        // 可以往后继续加字段进token
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
     public class RefreshToken
     {
         /// <summary>
-        /// 自定义保存进token的字段:用户账号
+        /// 自定义保存进token的字段:用户Id
         /// </summary>
-        [JsonPropertyName("account")]
-        public string Account { get; set; }    // 便于验证时追踪token身份
-        // 可以往后继续加字段进token
+        [JsonPropertyName("user")]
+        public TokenUser User { get; set; }    // 便于验证时追踪token身份
 
         /// <summary>
         /// 

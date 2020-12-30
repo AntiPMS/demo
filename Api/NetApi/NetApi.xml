@@ -99,44 +99,47 @@
             GatewayTimeout
             </summary>
         </member>
+        <member name="T:NetApi.Common.IJwtAuthManager">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="P:NetApi.Common.IJwtAuthManager.UsersRefreshTokensReadOnlyDictionary">
             <summary>
             
             </summary>
         </member>
-        <member name="M:NetApi.Common.IJwtAuthManager.GenerateTokens(System.String,System.Security.Claims.Claim[],System.DateTime)">
+        <member name="M:NetApi.Common.IJwtAuthManager.GenerateTokens(NetApi.Common.TokenUser,System.Security.Claims.Claim[])">
             <summary>
             生成token
             </summary>
-            <param name="account"></param>
+            <param name="user"></param>
             <param name="claims"></param>
-            <param name="now"></param>
             <returns></returns>
         </member>
-        <member name="M:NetApi.Common.IJwtAuthManager.Refresh(System.String,System.String,System.DateTime)">
+        <member name="M:NetApi.Common.IJwtAuthManager.Refresh(System.String,System.String)">
             <summary>
             
             </summary>
             <param name="refreshToken"></param>
             <param name="accessToken"></param>
-            <param name="now"></param>
             <returns></returns>
         </member>
         <member name="M:NetApi.Common.IJwtAuthManager.RemoveExpiredRefreshTokens(System.DateTime)">
             <summary>
-             清除入参时间前的token
+             按时间清除所有token
             </summary>
-            <param name="now"></param>
+            <param name="now">截止时间</param>
         </member>
         <member name="M:NetApi.Common.IJwtAuthManager.RemoveRefreshTokenByAccount(System.String)">
             <summary>
-            清除入参帐号的所有token
+            按用户Id清除所有token
             </summary>
-            <param name="account"></param>
+            <param name="userId">用户Id</param>
         </member>
         <member name="M:NetApi.Common.IJwtAuthManager.DecodeJwtToken(System.String)">
             <summary>
-            
+            解析token
             </summary>
             <param name="token"></param>
             <returns></returns>
@@ -167,41 +170,44 @@
             <summary>
             清除入参帐号的所有token
             </summary>
-            <param name="account"></param>
+            <param name="userId"></param>
         </member>
-        <member name="M:NetApi.Common.JwtAuthManager.GenerateTokens(System.String,System.Security.Claims.Claim[],System.DateTime)">
+        <member name="M:NetApi.Common.JwtAuthManager.GenerateTokens(NetApi.Common.TokenUser,System.Security.Claims.Claim[])">
             <summary>
             生成token
             </summary>
-            <param name="account"></param>
+            <param name="User"></param>
             <param name="claims"></param>
-            <param name="now"></param>
             <returns></returns>
         </member>
-        <member name="M:NetApi.Common.JwtAuthManager.Refresh(System.String,System.String,System.DateTime)">
+        <member name="M:NetApi.Common.JwtAuthManager.Refresh(System.String,System.String)">
             <summary>
             获取二次授权token
             </summary>
             <param name="refreshToken"></param>
             <param name="accessToken"></param>
-            <param name="now"></param>
             <returns></returns>
         </member>
         <member name="M:NetApi.Common.JwtAuthManager.DecodeJwtToken(System.String)">
             <summary>
-            解码token串
+            解析token
             </summary>
             <param name="token"></param>
             <returns></returns>
+        </member>
+        <member name="T:NetApi.Common.TokenUser">
+            <summary>
+            
+            </summary>
         </member>
         <member name="T:NetApi.Common.RefreshToken">
             <summary>
             
             </summary>
         </member>
-        <member name="P:NetApi.Common.RefreshToken.Account">
+        <member name="P:NetApi.Common.RefreshToken.User">
             <summary>
-            自定义保存进token的字段:用户账号
+            自定义保存进token的字段:用户Id
             </summary>
         </member>
         <member name="P:NetApi.Common.RefreshToken.TokenString">
@@ -259,6 +265,18 @@
             二次token时效(分钟)
             </summary>
         </member>
+        <member name="T:NetApi.Common.MD5Helper">
+            <summary>
+            MD5工具类
+            </summary>
+        </member>
+        <member name="M:NetApi.Common.MD5Helper.EnCode(System.String)">
+            <summary>
+            加密
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
         <member name="T:NetApi.Controllers.UsersController">
             <summary>
             User
@@ -271,18 +289,25 @@
             <param name="context"></param>
             <param name="jwtAuthManager"></param>
         </member>
-        <member name="M:NetApi.Controllers.UsersController.Token(NetApi.Models.View.userlogin)">
+        <member name="M:NetApi.Controllers.UsersController.Login(NetApi.Models.View.RequestViewUserlogin)">
             <summary>
-            token
+            登录
             </summary>
-            <param name="user"></param>
+            <param name="userlogin">ViewModel:<see cref="T:NetApi.Models.View.RequestViewUserlogin"/></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.RefreshToken(NetApi.Models.View.RequestViewRefreshToken)">
+            <summary>
+            refreshtoken ViewModel:<see cref="T:NetApi.Models.View.RequestViewRefreshToken"/>
+            </summary>
+            <param name="rtoken"><see cref="P:NetApi.Models.View.RequestViewRefreshToken.RefreshToken"/></param>
             <returns></returns>
         </member>
         <member name="M:NetApi.Controllers.UsersController.GetUsers">
             <summary>
             获取用户列表
             </summary>
-            <returns></returns>
+            <returns><see cref="T:NetApi.Models.users"/></returns>
         </member>
         <member name="M:NetApi.Controllers.UsersController.Test">
             <summary>
@@ -290,7 +315,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:NetApi.Models.View.view_users">
+        <member name="T:NetApi.Models.View.ResponseViewUsers">
             <summary>
             用户查询视图
             </summary>
