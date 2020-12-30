@@ -64,7 +64,7 @@ namespace NetApi.Controllers
                     var jwt = _jwtAuthManager.GenerateTokens(
                             new TokenUser() { Id = user.Id.ToString(), Account = user.Account, Name = user.Name }
                             , claims);
-                    result.content = new { jwt.RefreshToken.User, jwt.AccessToken, jwt.RefreshToken.TokenString };
+                    result.content = new { jwt.RefreshToken.User, jwt.AccessToken, RefreshToken = jwt.RefreshToken.TokenString };
                     result.msg = "登录成功!";
                 }
                 else
@@ -105,7 +105,7 @@ namespace NetApi.Controllers
                     var uClaims = User.Claims.ToList();
                     var accessToken = HttpContext.GetTokenAsync("Bearer", "access_token").Result;
                     var jwt = _jwtAuthManager.Refresh(rtoken.RefreshToken, accessToken);
-                    art.content = new { jwt.RefreshToken.User, jwt.AccessToken, jwt.RefreshToken.TokenString };
+                    art.content = new { jwt.RefreshToken.User, jwt.AccessToken, RefreshToken = jwt.RefreshToken.TokenString };
                     art.msg = "刷新成功!";
                 }
             }

@@ -275,3 +275,21 @@ Api/NetApi/NetApi.csproj.user
 Api/NetApi/.vs/NetApi/DesignTimeBuild
 Api/NetApi/.vs/NetApi/v16
 
+# WebSite
+WebSite/.DS_Store
+WebSite/node_modules/
+WebSite/dist/
+WebSite/npm-debug.log*
+WebSite/yarn-debug.log*
+WebSite/yarn-error.log*
+WebSite/test/unit/coverage/
+WebSite/test/e2e/reports/
+WebSite/selenium-debug.log
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
