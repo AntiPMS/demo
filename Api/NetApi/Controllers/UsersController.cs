@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using NetApi.Business;
 using NetApi.Common;
 using NetApi.Models;
@@ -24,6 +25,8 @@ namespace NetApi.Controllers
     {
         private Users _us;
         private readonly IJwtAuthManager _jwtAuthManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IConfiguration _configuration;
         private readonly NetApiContext _context;
 
         /// <summary>
@@ -31,21 +34,40 @@ namespace NetApi.Controllers
         /// </summary>
         /// <param name="context"></param>
         /// <param name="jwtAuthManager"></param>
-        public UsersController(NetApiContext context, IJwtAuthManager jwtAuthManager)
+        /// <param name="webHostEnvironment"></param>
+        /// <param name="configuration"></param>
+        public UsersController(
+            NetApiContext context
+            , IJwtAuthManager jwtAuthManager
+            , IWebHostEnvironment webHostEnvironment
+            , IConfiguration configuration)
         {
             _context = context;
             _us = new Users(context);
             _jwtAuthManager = jwtAuthManager;
+            _webHostEnvironment = webHostEnvironment;
+            _configuration = configuration;
+        }
+
+        /// <summary>
+        /// 环境参数
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public ApiResult GetEnv()
+        {
+            return new ApiResult() { content = $@"env={_webHostEnvironment.EnvironmentName}, EnvTest:str={_configuration["EnvTest:str"]}" };
         }
 
         /// <summary>
         /// 登录
         /// </summary>
-        /// <param name="userlogin">ViewModel:<see cref="RequestViewUserlogin"/></param>
+        /// <param name="userlogin">ViewModel:<see cref="RequestViewUsers"/></param>
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public ApiResult Login(RequestViewUserlogin userlogin)
+        public ApiResult Login(RequestViewUsers userlogin)
         {
             ApiResult result = new ApiResult() { status = EnumStatus.OK, totalCount = 0 };
             try
@@ -128,5 +150,65 @@ namespace NetApi.Controllers
             return _us.GetUsers();
         }
 
+        /// <summary>
+        /// 分页查询用户
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public ApiResult GetUsersPage(int pageIndex, int pageSize)
+        {
+            return _us.GetUsersPage(pageIndex, pageSize);
+        }
+
+        /// <summary>
+        /// 按名字查询用户
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public ApiResult GetUsersByName(string name)
+        {
+            return _us.GetUsersByName(name);
+        }
+
+        /// <summary>
+        /// 批量新增用户
+        /// </summary>
+        /// <param name="newUsers"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public ApiResult AddUsers(List<RequestInsertUsers> newUsers)
+        {
+            return _us.AddUsers(newUsers);
+        }
+
+        /// <summary>
+        /// 批量修改用户
+        /// </summary>
+        /// <param name="editUsers"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public ApiResult UpdateUsers(List<RequestUpdateUsers> editUsers)
+        {
+            return _us.UpdateUsers(editUsers);
+        }
+
+        /// <summary>
+        /// 批量删除用户
+        /// </summary>
+        /// <param name="usersId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public ApiResult DelUsers(List<int> usersId)
+        {
+            return _us.DelUsers(usersId);
+        }
     }
 }

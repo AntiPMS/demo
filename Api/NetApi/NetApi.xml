@@ -4,6 +4,59 @@
         <name>NetApi</name>
     </assembly>
     <members>
+        <member name="T:NetApi.Business.Users">
+            <summary>
+            用户功能 实现层
+            </summary>
+        </member>
+        <member name="M:NetApi.Business.Users.#ctor(NetApi.Models.NetApiContext)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:NetApi.Business.Users.GetUsers">
+            <summary>
+            获取所有用户
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Business.Users.GetUsersPage(System.Int32,System.Int32)">
+            <summary>
+            分页查询用户
+            </summary>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Business.Users.GetUsersByName(System.String)">
+            <summary>
+            按名字查询用户
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Business.Users.AddUsers(System.Collections.Generic.List{NetApi.Models.View.RequestInsertUsers})">
+            <summary>
+            新增用户
+            </summary>
+            <param name="newUsers">待新增用户数组</param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Business.Users.UpdateUsers(System.Collections.Generic.List{NetApi.Models.View.RequestUpdateUsers})">
+            <summary>
+            修改用户
+            </summary>
+            <param name="editUsers">待修改用户视图数组</param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Business.Users.DelUsers(System.Collections.Generic.List{System.Int32})">
+            <summary>
+            修改用户
+            </summary>
+            <param name="usersId">待删除用户Id数组</param>
+            <returns></returns>
+        </member>
         <member name="T:NetApi.Common.ApiResult">
             <summary>
             通用Api返回模型 
@@ -282,23 +335,31 @@
             User
             </summary>
         </member>
-        <member name="M:NetApi.Controllers.UsersController.#ctor(NetApi.Models.NetApiContext,NetApi.Common.IJwtAuthManager)">
+        <member name="M:NetApi.Controllers.UsersController.#ctor(NetApi.Models.NetApiContext,NetApi.Common.IJwtAuthManager,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             构造函数
             </summary>
             <param name="context"></param>
             <param name="jwtAuthManager"></param>
+            <param name="webHostEnvironment"></param>
+            <param name="configuration"></param>
         </member>
-        <member name="M:NetApi.Controllers.UsersController.Login(NetApi.Models.View.RequestViewUserlogin)">
+        <member name="M:NetApi.Controllers.UsersController.GetEnv">
+            <summary>
+            环境参数
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.Login(NetApi.Models.View.RequestViewUsers)">
             <summary>
             登录
             </summary>
-            <param name="userlogin">ViewModel:<see cref="T:NetApi.Models.View.RequestViewUserlogin"/></param>
+            <param name="userlogin">ViewModel:<see cref="T:NetApi.Models.View.RequestViewUsers"/></param>
             <returns></returns>
         </member>
         <member name="M:NetApi.Controllers.UsersController.RefreshToken(NetApi.Models.View.RequestViewRefreshToken)">
             <summary>
-            refreshtoken ViewModel:<see cref="T:NetApi.Models.View.RequestViewRefreshToken"/>
+            刷新token
             </summary>
             <param name="rtoken"><see cref="P:NetApi.Models.View.RequestViewRefreshToken.RefreshToken"/></param>
             <returns></returns>
@@ -309,11 +370,96 @@
             </summary>
             <returns><see cref="T:NetApi.Models.users"/></returns>
         </member>
-        <member name="M:NetApi.Controllers.UsersController.Test">
+        <member name="M:NetApi.Controllers.UsersController.GetUsersPage(System.Int32,System.Int32)">
             <summary>
-            test
+            分页查询用户
             </summary>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
             <returns></returns>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.GetUsersByName(System.String)">
+            <summary>
+            按名字查询用户
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.AddUsers(System.Collections.Generic.List{NetApi.Models.View.RequestInsertUsers})">
+            <summary>
+            批量新增用户
+            </summary>
+            <param name="newUsers"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.UpdateUsers(System.Collections.Generic.List{NetApi.Models.View.RequestUpdateUsers})">
+            <summary>
+            批量修改用户
+            </summary>
+            <param name="editUsers"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetApi.Controllers.UsersController.DelUsers(System.Collections.Generic.List{System.Int32})">
+            <summary>
+            批量删除用户
+            </summary>
+            <param name="usersId"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NetApi.Models.View.RequestInsertUsers">
+            <summary>
+            新增用户
+            </summary>
+        </member>
+        <member name="P:NetApi.Models.View.RequestInsertUsers.Account">
+            <summary>
+            帐户
+            </summary>
+        </member>
+        <member name="P:NetApi.Models.View.RequestInsertUsers.Pwd">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:NetApi.Models.View.RequestInsertUsers.Name">
+            <summary>
+            姓名
+            </summary>
+        </member>
+        <member name="P:NetApi.Models.View.RequestInsertUsers.Sex">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="T:NetApi.Models.View.RequestUpdateUsers">
+            <summary>
+            修改用户
+            </summary>
+        </member>
+        <member name="P:NetApi.Models.View.RequestUpdateUsers.Id">
+            <summary>
+            帐户
+            </summary>
+        </member>
+        <member name="P:NetApi.Models.View.RequestUpdateUsers.Account">
+            <summary>
+            帐户
+            </summary>
+        </member>
+        <member name="P:NetApi.Models.View.RequestUpdateUsers.Pwd">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:NetApi.Models.View.RequestUpdateUsers.Name">
+            <summary>
+            姓名
+            </summary>
+        </member>
+        <member name="P:NetApi.Models.View.RequestUpdateUsers.Sex">
+            <summary>
+            性别
+            </summary>
         </member>
         <member name="T:NetApi.Models.View.ResponseViewUsers">
             <summary>
