@@ -157,7 +157,7 @@ namespace NetApi.Controllers
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize]
         public ApiResult GetUsersPage(int pageIndex, int pageSize)
         {
             return _us.GetUsersPage(pageIndex, pageSize);
@@ -169,7 +169,7 @@ namespace NetApi.Controllers
         /// <param name="name"></param>
         /// <returns></returns>
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize]
         public ApiResult GetUsersByName(string name)
         {
             return _us.GetUsersByName(name);
@@ -181,7 +181,7 @@ namespace NetApi.Controllers
         /// <param name="newUsers"></param>
         /// <returns></returns>
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize]
         public ApiResult AddUsers(List<RequestInsertUsers> newUsers)
         {
             return _us.AddUsers(newUsers);
@@ -193,7 +193,7 @@ namespace NetApi.Controllers
         /// <param name="editUsers"></param>
         /// <returns></returns>
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize]
         public ApiResult UpdateUsers(List<RequestUpdateUsers> editUsers)
         {
             return _us.UpdateUsers(editUsers);
@@ -205,7 +205,7 @@ namespace NetApi.Controllers
         /// <param name="usersId"></param>
         /// <returns></returns>
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize]
         public ApiResult DelUsers(List<int> usersId)
         {
             return _us.DelUsers(usersId);
