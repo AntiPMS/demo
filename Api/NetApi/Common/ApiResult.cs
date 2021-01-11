@@ -12,7 +12,7 @@ namespace NetApi.Common
     public class ApiResult
     {
         /// <summary>
-        /// 返回状态 https://httpstatuses.com/
+        /// 返回状态 [状态码说明](https://httpstatuses.com/)
         /// </summary>
         public EnumStatus status { get; set; }
 
@@ -33,7 +33,7 @@ namespace NetApi.Common
     }
 
     /// <summary>
-    /// 状态枚举类
+    /// 状态枚举类 [状态码说明](https://httpstatuses.com/)
     /// </summary>
     public enum EnumStatus
     {

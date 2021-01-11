@@ -55,13 +55,15 @@ namespace NetApi
             );
             #endregion
 
+            #region swagger配置
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "NetApi", Version = "v1" });
-                var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录（绝对，不受工作目录影响，建议采用此方法获取路径）
+                var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录
                 var xmlPath = Path.Combine(basePath, "NetApi.xml");
-                c.IncludeXmlComments(xmlPath);
+                c.IncludeXmlComments(xmlPath); //配置注释指向的xml文件
             });
+            #endregion
 
             #region 添加JWT
             var jwtTokenConfig = Configuration.GetSection("jwtTokenConfig").Get<JwtTokenConfig>();
