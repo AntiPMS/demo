@@ -39,8 +39,17 @@ namespace NetApi.Business
             {
                 //_context --> pb 数据窗口库
                 var data = _context.users
+                                   //.GroupBy(m => m.Birthday, (gourpKey, n) => new
+                                   //{
+                                   //    Birthday = gourpKey,
+                                   //    MaxId = n.Max(x => x.Id),
+                                   //    Cnt = n.Count()
+                                   //})
                                    .Select(m => new
                                    {
+                                       //m.Birthday,
+                                       //m.MaxId,
+                                       //m.Cnt
                                        m.Id,
                                        m.Account,
                                        m.Name,

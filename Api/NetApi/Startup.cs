@@ -61,6 +61,29 @@ namespace NetApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "NetApi", Version = "v1" });
                 var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);//获取应用程序所在目录
                 var xmlPath = Path.Combine(basePath, "NetApi.xml");
+                //SwaggerUI添加Header请求
+                c.OperationFilter<ApiHeaderFilter>();
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference()
+                            {
+                                Id = "Bearer",
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        }, Array.Empty<string>()
+                    }
+                });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "请输入Token，格式为Bearer [token]",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
                 c.IncludeXmlComments(xmlPath); //配置注释指向的xml文件
             });
             #endregion
