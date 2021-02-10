@@ -1,9 +1,5 @@
 <template>
   <div id="app">
-    <van-nav-bar title="陈医生"
-                 left-text="返回"
-                 left-arrow
-                 @click-left="onClickLeft" />
     <router-view />
   </div>
 </template>
