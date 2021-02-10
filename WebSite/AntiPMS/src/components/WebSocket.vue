@@ -19,12 +19,12 @@
             <img src="../assets/医生头像.png"
                  style="float: left;margin-top: 15px">
             <div style="float: left">
-              <label style="color:#3f9775">{{msgtext.senderName}}</label>
+              <label style="color:black">{{msgtext.senderName}}</label>
               <br>
               <!-- 文本消息 -->
               <div v-if="msgtext.msgType==1">
                 <input :value=msgtext.msg
-                       style=" border-radius: 5px;color:#3f9775;border: 1px solid #dadada;padding-left: 5px;font-weight: 100"
+                       style=" border-radius: 5px;color:black;border: 1px solid #dadada;padding-left: 5px;font-weight: 100"
                        :style="{ width:msgtext.msg.length*16 + 'px' }"
                        disabled>
               </div>
@@ -43,12 +43,12 @@
             <img src="../assets/医生头像.png"
                  style="float: right;margin-top: 15px">
             <div style="float: right">
-              <label style="float: right;padding-right: 5px;color:#3f9775">{{msgtext.senderName}}</label>
+              <label style="float: right;padding-right: 5px;color:black">{{msgtext.senderName}}</label>
               <br>
               <!-- 文本消息 -->
               <div v-if="msgtext.msgType==1">
                 <input :value=msgtext.msg
-                       style=" border-radius: 5px;color:#3f9775;border: 1px solid #dadada;padding-left: 5px;font-weight: 100"
+                       style=" border-radius: 5px;color:black;border: 1px solid #dadada;padding-left: 5px;font-weight: 100"
                        :style="{ width:msgtext.msg.length*16 + 'px' }"
                        disabled>
               </div>
