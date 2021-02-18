@@ -24,8 +24,7 @@
               <!-- 文本消息 -->
               <div v-if="msgtext.msgType==1">
                 <input :value=msgtext.msg
-                       style=" border-radius: 5px;color:black;border: 1px solid #dadada;padding-left: 5px;font-weight: 100"
-                       :style="{ width:msgtext.msg.length*16 + 'px' }"
+                       style=" border-radius: 5px;color:black;border: 1px solid #dadada;padding-left: 5px;font-weight: 100;width:auto;"
                        disabled>
               </div>
               <div v-else-if="msgtext.msgType==2">
@@ -48,8 +47,7 @@
               <!-- 文本消息 -->
               <div v-if="msgtext.msgType==1">
                 <input :value=msgtext.msg
-                       style=" border-radius: 5px;color:black;border: 1px solid #dadada;padding-left: 5px;font-weight: 100"
-                       :style="{ width:msgtext.msg.length*16 + 'px' }"
+                       style=" border-radius: 5px;color:black;border: 1px solid #dadada;padding-left: 5px;font-weight: 100;width:auto;"
                        disabled>
               </div>
               <div v-else-if="msgtext.msgType==2">
@@ -68,7 +66,7 @@
     <!-- 消息主体 End-->
     <!-- 底部工具、输入框 Start -->
     <div ref="container"
-         style="bottom:0px">
+         class="foot">
       <van-cell-group>
         <van-cell>
           <van-row>
@@ -104,11 +102,19 @@
 .van-cell__value {
   padding-left: 5%;
 }
+foot {
+  width: 100%;
+  min-height: 48px;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  background-color: #181717;
+}
 </style>
 <style>
 input:disabled {
   cursor: default;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(128, 125, 125, 0.3);
 }
 </style>
 <script>
@@ -182,7 +188,7 @@ export default {
     },
     doConnect (app) {
       // cloudhospital.knjs.com.cn:1071
-      let uri = 'ws://cloudhospital.knjs.com.cn:1071/ws?senderId=' + this.sendMsg.senderId + '&targetId=' + this.sendMsg.targetId
+      let uri = 'ws://localhost:5000/ws?senderId=' + this.sendMsg.senderId + '&targetId=' + this.sendMsg.targetId
       this.socket = new WebSocket(uri)
       let showNotify = this.showNotify
       this.socket.onopen = function (e) {

@@ -116,6 +116,10 @@ namespace NetApi
             services.AddSingleton<IJwtAuthManager>(m => new JwtAuthManager(jwtTokenConfig));
             #endregion
 
+            #region 添加socket管理服务
+            services.AddSingleton<IWebsocketManager, WebsocketManager>();
+            #endregion
+
         }
 
         /// <summary>
@@ -152,6 +156,35 @@ namespace NetApi
             {
                 endpoints.MapControllers();
             });
+
+            #region websocket配置
+            app.UseWebSockets(new WebSocketOptions
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(120),
+            });
+            app.UseMiddleware<MyWebSocketMiddleware>();
+            #endregion
+
+            #region 建立必要的文件夹
+            try
+            {
+                List<string> DirectorList = new List<string> {
+                    Configuration["Appsettings:UploadFilesLocation"]//上传文件目录
+                };
+                DirectorList.ForEach(m =>
+                {
+                    if (!string.IsNullOrEmpty(m))
+                    {
+                        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, m);
+                        if (!Directory.Exists(path))
+                            Directory.CreateDirectory(path);
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+            }
+            #endregion
         }
     }
 }
