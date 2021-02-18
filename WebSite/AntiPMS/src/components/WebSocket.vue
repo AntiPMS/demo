@@ -188,7 +188,7 @@ export default {
     },
     doConnect (app) {
       // cloudhospital.knjs.com.cn:1071
-      let uri = 'ws://localhost:5000/ws?senderId=' + this.sendMsg.senderId + '&targetId=' + this.sendMsg.targetId
+      let uri = 'wss://api.qinko.club/ws?senderId=' + this.sendMsg.senderId + '&targetId=' + this.sendMsg.targetId
       this.socket = new WebSocket(uri)
       let showNotify = this.showNotify
       this.socket.onopen = function (e) {

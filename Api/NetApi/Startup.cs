@@ -40,6 +40,7 @@ namespace NetApi
         /// </summary>
         public IConfiguration Configuration { get; }
 
+
         /// <summary>
         /// This method gets called by the runtime. Use this method to add services to the container.
         /// </summary>
@@ -48,6 +49,16 @@ namespace NetApi
         {
 
             services.AddControllers();
+
+            #region ¿çÓò
+            services.AddCors(options =>
+            options.AddPolicy("NetApiCors", p => p
+                               .WithMethods("GET", "POST", "HEAD", "PUT", "DELETE", "OPTIONS")
+                               .DisallowCredentials()
+                               .AllowAnyHeader()
+                               .AllowAnyOrigin()
+                               ));
+            #endregion
 
             #region ×¢²ámysqlÊý¾Ý¿â
             services.AddDbContext<NetApiContext>(

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using NetApi.Models;
 using Newtonsoft.Json;
 using System;
@@ -156,7 +157,12 @@ namespace NetApi.Common
     /// </summary>
     public class WebsocketManager : IWebsocketManager
     {
-        public WebsocketManager() { }
+        private IConfiguration _conf { get; }
+
+        public WebsocketManager(IConfiguration configuration)
+        {
+            _conf = configuration;
+        }
 
         private static List<WebSocketClient> _clients = new List<WebSocketClient>();
 
@@ -227,7 +233,7 @@ namespace NetApi.Common
 
         private void SendHisMessage(WebSocketClient client)
         {
-            using (var db = new NetApiContext())
+            using (var db = new NetApiContextForMsg(_conf))
             {
                 var msgTypeList = new List<sbyte>() { (sbyte)MsgType.Text, (sbyte)MsgType.Img };
                 //默认先取 日期倒排 历史近20条
@@ -256,7 +262,7 @@ namespace NetApi.Common
 
         private void Save2DataBase(string senderId, string targetId, MsgType msgType, string msg)
         {
-            using (var db = new NetApiContext())
+            using (var db = new NetApiContextForMsg(_conf))
             {
                 using (var tran = db.Database.BeginTransaction())
                 {
@@ -268,7 +274,7 @@ namespace NetApi.Common
                             SenderId = senderId,
                             TargetId = targetId,
                             MsgType = (sbyte)msgType,
-                            Msg= msg,
+                            Msg = msg,
                         });
                         db.SaveChanges();
                         tran.Commit();
@@ -286,7 +292,6 @@ namespace NetApi.Common
             isSuccess = true;
             try
             {
-
                 switch (message.MsgType)
                 {
                     //case MsgType.Join:
