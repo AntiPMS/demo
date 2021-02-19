@@ -10,125 +10,88 @@
     <!-- 消息通知 End-->
     <!-- 消息主体 Start-->
     <div :style="height"
-         style="overflow-y: scroll">
+         style="overflow-y: scroll"
+         id="dhk">
       <van-cell v-for="(msgtext,index) in receiveMsgText"
                 :key="msgtext.msg">
         <!-- 别人的消息 Start -->
-        <transition name="van-slide-up">
-          <a v-if="msgtext.senderId!=sendMsg.senderId">
-            <img src="../assets/医生头像.png"
-                 style="float: left;margin-top: 15px">
-            <div style="float: left">
-              <label style="color:black">{{msgtext.senderName}}</label>
-              <br>
-              <!-- 文本消息 -->
-              <div v-if="msgtext.msgType==1">
-                <input :value=msgtext.msg
-                       style=" border-radius: 5px;color:black;border: 1px solid #dadada;padding-left: 5px;font-weight: 100;width:auto;"
-                       disabled>
-              </div>
-              <div v-else-if="msgtext.msgType==2">
-                <!-- 图片 -->
-                <img :src=msgtext.msg
-                     :style="{width: imgWidth[index] + 'px', height: imgHeigth[index] + 'px'}"
-                     :id=index
-                     @load="onload">
-              </div>
+        <a v-if="msgtext.senderId!=sendMsg.senderId">
+          <img src="../assets/医生头像@3x.png"
+               style="float: left;margin-top: 15px;width:44px;height: 44px">
+          <div style="float: left">
+            <label style="color:#3f9775;font-size: 12px;">{{msgtext.senderName}}</label>
+            <br>
+            <!-- 文本消息 -->
+            <div v-if="msgtext.msgType==1">
+              <input :value=msgtext.msg
+                     style=" border-radius: 5px;color:black;border: 1px solid #dadada;padding-left: 5px;font-weight: 100;width:auto;"
+                     disabled>
             </div>
-          </a>
-          <!-- 别人的消息 End -->
-          <!-- 自己的消息 Start-->
-          <a v-else-if="msgtext.senderId==sendMsg.senderId">
-            <img src="../assets/医生头像.png"
-                 style="float: right;margin-top: 15px">
-            <div style="float: right">
-              <label style="float: right;padding-right: 5px;color:black">{{msgtext.senderName}}</label>
-              <br>
-              <!-- 文本消息 -->
-              <div v-if="msgtext.msgType==1">
-                <input :value=msgtext.msg
-                       style=" border-radius: 5px;color:black;border: 1px solid #dadada;padding-left: 5px;font-weight: 100;width:auto;"
-                       disabled>
-              </div>
-              <div v-else-if="msgtext.msgType==2">
-                <!-- 图片 -->
-                <img :src=msgtext.msg
-                     :style="{width: imgWidth[index] + 'px', height: imgHeigth[index] + 'px'}"
-                     :id=index
-                     @load="onload">
-              </div>
+            <div v-else-if="msgtext.msgType==2">
+              <!-- 图片 -->
+              <img :src=msgtext.msg
+                   :style="{width: imgWidth[index] + 'px', height: imgHeigth[index] + 'px'}"
+                   :id=index
+                   @load="onload">
             </div>
-          </a>
-        </transition>
+          </div>
+        </a>
+        <!-- 别人的消息 End -->
+        <!-- 自己的消息 Start-->
+        <a v-else-if="msgtext.senderId==sendMsg.senderId">
+          <img src="../assets/医生头像@3x.png"
+               style="float: right;margin-top: 15px;width:44px;height: 44px">
+          <label style="float: right;padding-right: 5px;color:#3f9775;font-size: 12px">{{msgtext.senderName}}</label>
+          <br>
+          <div style="float: right">
+            <!-- 文本消息 -->
+            <div v-if="msgtext.msgType==1">
+              <input :value=msgtext.msg
+                     style=" border-radius: 5px;color:black;border: 1px solid #dadada;padding-left: 5px;font-weight: 100;width:auto;"
+                     disabled>
+            </div>
+            <div v-else-if="msgtext.msgType==2">
+              <!-- 图片 -->
+              <label style="float: right;padding-right: 5px;color:#3f9775;font-size: 12px">{{msgtext.senderName}}</label>
+              <br>
+              <img :src=msgtext.msg
+                   :style="{width: imgWidth[index] + 'px', height: imgHeigth[index] + 'px'}"
+                   :id=index>
+            </div>
+          </div>
+        </a>
         <!-- 自己的消息 End -->
       </van-cell>
     </div>
     <!-- 消息主体 End-->
     <!-- 底部工具、输入框 Start -->
-    <div ref="container"
-         class="foot">
-      <van-cell-group>
-        <van-cell>
-          <van-row>
-            <van-col>
-              <van-field v-model="sendMsg.msg"
-                         v-on:keyup.enter="doSend(true)"
-                         type="input"
-                         maxlength="1000"
-                         style="float: left;border:5px;border-color:black;"
-                         :style="width" />
-            </van-col>
-            <van-button v-on:click="doSend(true)"
-                        type="primary"
-                        style="float:left;margin-left: 15px">发送</van-button>
-          </van-row>
-        </van-cell>
-      </van-cell-group>
+    <div style="margin-bottom:5px;margin-top: -1px">
+      <van-field v-model="sendMsg.msg"
+                 v-on:keyup.enter="doSend(true)"
+                 type="input"
+                 maxlength="1000"
+                 class="communicationInput"
+                 style="float: left;"
+                 :style="{width:KD}" />
+      <van-button v-on:click="doSend(true)"
+                  type="primary"
+                  style="float:right;margin-right: 10px;margin-top: 5px">发送</van-button>
     </div>
     <!-- 底部工具、输入框 End -->
   </div>
 </template>
-<style scoped>
-.van-field__control {
-  border: 2px solid green;
-}
-.van-cell {
-  width: 95%;
-  padding: 0;
-}
-.van-cell::after {
-  border: 0;
-}
-.van-cell__value {
-  padding-left: 5%;
-}
-foot {
-  width: 100%;
-  min-height: 48px;
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  background-color: #181717;
-}
-</style>
-<style>
-input:disabled {
-  cursor: default;
-  background-color: rgba(128, 125, 125, 0.3);
-}
-</style>
 <script>
 export default {
   name: 'MyWebSocket',
   data () {
     return {
+      KD: '',
       currentMsg: '',
       showMsg: false,
-      container: null,
       socket: null,
       receiveMsgText: [],
-      imgWidth: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 要设置的img宽
-      imgHeigth: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 要设置的img高
+      imgWidth: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100], // 要设置的img宽
+      imgHeigth: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100], // 要设置的img高
       height: {
         height: ''
       },
@@ -149,12 +112,12 @@ export default {
     // init sendMsg object
     this.sendMsg.senderId = this.guid() // 'qinko'
     this.sendMsg.senderName = this.sendMsg.senderId// this.guid().substring(4)
-    this.sendMsg.targetId = '233'
-    this.hh()
+    this.sendMsg.targetId = '5'
+    this.getLenth()
     this.doConnect(this)
   },
   mouted: function () {
-    this.container = this.$refs.container
+
   },
   beforeDestroy: function () {
 
@@ -163,9 +126,10 @@ export default {
     this.socket.onclose()
   },
   methods: {
-    hh () {
+    getLenth () {
       this.height.height = document.documentElement.clientHeight - 80 + 'px'
       this.width.width = document.documentElement.clientWidth - 120 + 'px'
+      this.KD = document.documentElement.clientWidth - 120 + 'px'
     },
     upLoadFile (file) {
       this.sendMsg.msgType = 2
@@ -188,6 +152,7 @@ export default {
     },
     doConnect (app) {
       // cloudhospital.knjs.com.cn:1071
+      // api.qinko.club
       let uri = 'wss://api.qinko.club/ws?senderId=' + this.sendMsg.senderId + '&targetId=' + this.sendMsg.targetId
       this.socket = new WebSocket(uri)
       let showNotify = this.showNotify
@@ -231,22 +196,28 @@ export default {
           msg: this.sendMsg.msg
         })
       this.sendMsg.msg = ''
+      var div = document.getElementById('dhk')
+      div.scrollTop = div.scrollHeight - 200
     },
     onload (e) { // 图片加载时
       let imgW = e.target.naturalWidth// 图片宽
       let imgH = e.target.naturalHeight // 图片高
       let index = e.target.id
-      // 如果图片宽高小于浏览器,不做改变
       if (imgW < document.documentElement.clientWidth) {
         this.imgWidth[index] = imgW
         this.imgHeigth[index] = imgH
       } else {
         // 图片的宽高比例大于dialog最大宽高比时，以dialog内容的最大宽度为图片的宽度
-        this.imgWidth[index] = document.documentElement.clientWidth - 50
-        this.imgHeigth[index] = (document.documentElement.clientWidth - 50) * imgH / imgW
+        this.imgWidth[index] = document.documentElement.clientWidth - 150
+        this.imgHeigth[index] = (document.documentElement.clientWidth - 150) * imgH / imgW
       }
     }
   }
 }
 
 </script>
+<style>
+.communicationInput input {
+  border: 2px solid #3f9775;
+}
+</style>

@@ -139,6 +139,12 @@ namespace NetApi.Common
         public IEnumerable<WebSocketClient> GetByTargetId(string senderId, string targetId);
 
         /// <summary>
+        /// 获取当前所有在线socket
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<WebSocketClient> GetCurrentAll();
+
+        /// <summary>
         /// 发送消息给客户端
         /// </summary>
         /// <param name="model"></param>
@@ -211,6 +217,12 @@ namespace NetApi.Common
         public IEnumerable<WebSocketClient> GetByTargetId(string senderId, string targetId) => _clients.Where(m => m.TargetId == targetId && m.Id != senderId);
 
         /// <summary>
+        /// 获取当前所有在线socket
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<WebSocketClient> GetCurrentAll() => _clients.ToList();
+
+        /// <summary>
         /// 发送消息给客户端
         /// </summary>
         /// <param name="model"></param>
@@ -250,6 +262,7 @@ namespace NetApi.Common
                         {
                             SenderId = m.SenderId,
                             SenderName = m.SenderId,
+                            TargetId = m.TargetId,
                             MsgType = (MsgType)m.MsgType,
                             Msg = m.Msg,
                             SendDate = m.SendDate

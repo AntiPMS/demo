@@ -28,6 +28,7 @@ namespace NetApi.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
         private readonly NetApiContext _context;
+        private readonly IWebsocketManager _wsManage;
 
         /// <summary>
         /// 构造函数
@@ -36,17 +37,20 @@ namespace NetApi.Controllers
         /// <param name="jwtAuthManager"></param>
         /// <param name="webHostEnvironment"></param>
         /// <param name="configuration"></param>
+        /// <param name="wsManage"></param>
         public UsersController(
             NetApiContext context
             , IJwtAuthManager jwtAuthManager
             , IWebHostEnvironment webHostEnvironment
-            , IConfiguration configuration)
+            , IConfiguration configuration
+            , IWebsocketManager wsManage)
         {
             _context = context;
             _us = new Users(context);
             _jwtAuthManager = jwtAuthManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
+            _wsManage = wsManage;
         }
 
         /// <summary>
@@ -209,6 +213,16 @@ namespace NetApi.Controllers
         public ApiResult DelUsers(List<int> usersId)
         {
             return _us.DelUsers(usersId);
+        }
+
+        /// <summary>
+        /// 获取当前所有在线socket
+        /// </summary>
+        [HttpGet]
+        [AllowAnonymous]
+        public IEnumerable<WebSocketClient> GetCurrentAll()
+        {
+            return _wsManage.GetCurrentAll();
         }
     }
 }
