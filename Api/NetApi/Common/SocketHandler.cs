@@ -337,6 +337,15 @@ namespace NetApi.Common
                             isSuccess = false;
                         }
                         break;
+                    case MsgType.HeartCheck:
+                        GetBySenderId(message.SenderId).SendMsg<string>(JsonConvert.SerializeObject(message));
+                        var clientHeartCheck = GetBySenderId(message.SenderId);
+                        if (clientHeartCheck != null)
+                        {
+                            message.Msg = "heartCheck";
+                            clientHeartCheck.SendMsg<string>(JsonConvert.SerializeObject(message));
+                        }
+                        break;
                     case MsgType.System:
                         Save2DataBase(message.SenderId, message.TargetId, message.MsgType, message.Msg);
 
@@ -383,6 +392,11 @@ namespace NetApi.Common
         /// 图片
         /// </summary>
         Img = 2,
+
+        /// <summary>
+        /// 心跳检测
+        /// </summary>
+        HeartCheck = 6,
 
         /// <summary>
         /// 系统发送的消息

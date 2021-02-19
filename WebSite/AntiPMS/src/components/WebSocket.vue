@@ -164,15 +164,17 @@ export default {
       }
       this.socket.onmessage = function (e) {
         var rmsg = JSON.parse(e.data)
-        app.receiveMsgText.push(
-          {
-            Id: rmsg['Id'],
-            senderId: rmsg['SenderId'],
-            senderName: rmsg['SenderName'],
-            msgType: rmsg['MsgType'],
-            msg: rmsg['Msg']
-          })
-        showNotify(rmsg['Msg'])
+        if (rmsg['MsgType'] == '6') {
+          app.receiveMsgText.push(
+            {
+              Id: rmsg['Id'],
+              senderId: rmsg['SenderId'],
+              senderName: rmsg['SenderName'],
+              msgType: rmsg['MsgType'],
+              msg: rmsg['Msg']
+            })
+          showNotify(rmsg['Msg'])
+        }
       }
       this.socket.onerror = function (e) {
         app.receiveMsgText.push({
@@ -211,6 +213,17 @@ export default {
         this.imgWidth[index] = document.documentElement.clientWidth - 150
         this.imgHeigth[index] = (document.documentElement.clientWidth - 150) * imgH / imgW
       }
+    },
+    websocketHeartCheck () {
+      this.socket.send(
+        JSON.stringify({
+          Id: '',
+          senderId: this.sendMsg.senderId,
+          senderName: this.sendMsg.senderName,
+          targetId: this.targetId,
+          msgType: 6,
+          msg: ''
+        }))
     }
   }
 }
