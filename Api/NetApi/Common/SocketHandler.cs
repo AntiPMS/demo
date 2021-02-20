@@ -261,7 +261,7 @@ namespace NetApi.Common
             return result;
         }
 
-        private void SendHisMessage(WebSocketClient client, WebSocket currentSocket)
+        private void SendHisMessage(WebSocketClient client,WebSocket currentSocket)
         {
             using (var db = new NetApiContextForMsg(_conf))
             {
@@ -285,7 +285,7 @@ namespace NetApi.Common
                             Msg = m.Msg,
                             SendDate = m.SendDate
                         };
-                        client.SendMsg(JsonConvert.SerializeObject(message));
+                        client.SendMsg2Self<string>(JsonConvert.SerializeObject(message), currentSocket);
                     });
                 }
             }
@@ -361,7 +361,7 @@ namespace NetApi.Common
                         if (clientHeartCheck != null)
                         {
                             message.Msg = "heartCheck";
-                            clientHeartCheck.HeartCheck(JsonConvert.SerializeObject(message), currentSocket);
+                            clientHeartCheck.SendMsg2Self(JsonConvert.SerializeObject(message), currentSocket);
                         }
                         break;
                     case MsgType.System:
@@ -513,10 +513,13 @@ namespace NetApi.Common
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="currentSocket"></param>
-        public void HeartCheck(string msg, WebSocket currentSocket)
+        public void SendMsg2Self<T>(T msg, WebSocket currentSocket)
         {
-            var msgs = Encoding.UTF8.GetBytes(msg);
-            currentSocket.SendAsync(new ArraySegment<byte>(msgs), WebSocketMessageType.Text, true, CancellationToken.None);
+            if (typeof(T).Equals(typeof(string)))
+            {
+                var msgs = Encoding.UTF8.GetBytes(msg as string);
+                currentSocket.SendAsync(new ArraySegment<byte>(msgs), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
         }
 
     }
