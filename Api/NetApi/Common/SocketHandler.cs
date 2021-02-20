@@ -37,8 +37,8 @@ namespace NetApi.Common
                     {
                         if (context.Request.QueryString.HasValue)
                         {
-                            var client = _wsManage.Add(context, webSocket);//加入到组里
-                            await Handle(client);
+                            _wsManage.Add(context, webSocket);//加入到组里
+                            await Handle(webSocket);
                         }
                         else
                         {
@@ -68,7 +68,7 @@ namespace NetApi.Common
         /// </summary>
         /// <param name="client"></param>
         /// <returns></returns>
-        private async Task Handle(WebSocketClient client)
+        private async Task Handle(WebSocket client)
         {
             WebSocketReceiveResult result = null;
             do
@@ -80,7 +80,7 @@ namespace NetApi.Common
                 #region 分包读取消息
                 do
                 {
-                    result = await client.socket.ReceiveAsync(buffer, CancellationToken.None);
+                    result = await client.ReceiveAsync(buffer, CancellationToken.None);
                     var messageBytes = buffer.Skip(buffer.Offset).Take(result.Count).ToArray();
                     webSocketData += Encoding.UTF8.GetString(messageBytes);
                 }
@@ -98,8 +98,6 @@ namespace NetApi.Common
                 }
             }
             while (!result.CloseStatus.HasValue);
-            //Console.WriteLine($"ws客户端:{client.Id}-{client.Name}断开[{client.TargetId}]连接.");
-            _wsManage.Remove(client);
         }
 
     }
@@ -115,7 +113,7 @@ namespace NetApi.Common
         /// <param name="context"></param>
         /// <param name="webSocket"></param>
         /// <returns></returns>
-        public WebSocketClient Add(HttpContext context, WebSocket webSocket);
+        public void Add(HttpContext context, WebSocket webSocket);
 
         /// <summary>
         /// 移除websocket
@@ -178,21 +176,43 @@ namespace NetApi.Common
         /// <param name="context"></param>
         /// <param name="webSocket"></param>
         /// <returns></returns>
-        public WebSocketClient Add(HttpContext context, WebSocket webSocket)
+        public void Add(HttpContext context, WebSocket webSocket)
         {
+            WebSocketClient client = new WebSocketClient();
             var queryStr = context.Request.QueryString.Value.Split("&");
-            var client = new WebSocketClient
+            var id = queryStr[0].Substring(queryStr[0].IndexOf('=') + 1);
+            var targetId = queryStr[1].Substring(queryStr[1].IndexOf('=') + 1);
+            var oldClients = _clients.Where(m => m.Id == id && m.TargetId == targetId);
+
+            //如果当前客户端从未连接过，则新增一个实例
+            if (!oldClients.Any())
             {
-                Id = queryStr[0].Substring(queryStr[0].IndexOf('=') + 1),
-                TargetId = queryStr[1].Substring(queryStr[1].IndexOf('=') + 1),
-                socket = webSocket
-            };
-            if (!_clients.Where(m => m.Id == client.Id && m.TargetId == client.TargetId).Any())
-            {
-                _clients.Add(client);
+                var newClient = new WebSocketClient
+                {
+                    Id = id,
+                    TargetId = targetId,
+                    socketList = new List<WebSocket>() { webSocket }
+                };
+                _clients.Add(newClient);
+                client = newClient;
             }
-            SendHisMessage(client);//发送历史消息
-            return client;
+            else//若连接过，则把socket实例添加进来，并移除已断开的客户端
+            {
+                var oldClient = oldClients.FirstOrDefault();
+                List<WebSocket> newSocketList = new List<WebSocket>() { webSocket };
+
+                oldClient.socketList.ForEach(m =>
+                {
+                    if (m.State == WebSocketState.Open)
+                    {
+                        newSocketList.Add(m);
+                    }
+                });
+
+                oldClient.socketList = newSocketList;
+                client = oldClient;
+            }
+            SendHisMessage(client, webSocket);//发送历史消息
         }
 
         /// <summary>
@@ -227,7 +247,7 @@ namespace NetApi.Common
         /// </summary>
         /// <param name="model"></param>
         /// <param name="isSuccess"></param>
-        public void SendMsg(WebSocketClientModel model, out bool isSuccess) => MessageRoute(model, out isSuccess);
+        public void SendMsg(WebSocketClientModel model, out bool isSuccess) => MessageRoute(model, null, out isSuccess);
 
         /// <summary>
         /// 消息类型枚举
@@ -243,7 +263,7 @@ namespace NetApi.Common
             return result;
         }
 
-        private void SendHisMessage(WebSocketClient client)
+        private void SendHisMessage(WebSocketClient client, WebSocket currentSocket)
         {
             using (var db = new NetApiContextForMsg(_conf))
             {
@@ -267,7 +287,7 @@ namespace NetApi.Common
                             Msg = m.Msg,
                             SendDate = m.SendDate
                         };
-                        client.SendMsg(JsonConvert.SerializeObject(message));
+                        client.SendMsg(JsonConvert.SerializeObject(message), currentSocket);
                     });
                 }
             }
@@ -300,7 +320,7 @@ namespace NetApi.Common
             }
         }
 
-        private void MessageRoute(WebSocketClientModel message, out bool isSuccess)
+        private void MessageRoute(WebSocketClientModel message, WebSocket currentSocket, out bool isSuccess)
         {
             isSuccess = true;
             try
@@ -338,12 +358,12 @@ namespace NetApi.Common
                         }
                         break;
                     case MsgType.HeartCheck:
-                        GetBySenderId(message.SenderId).SendMsg<string>(JsonConvert.SerializeObject(message));
+                        GetBySenderId(message.SenderId).SendMsg<string>(JsonConvert.SerializeObject(message), currentSocket);
                         var clientHeartCheck = GetBySenderId(message.SenderId);
                         if (clientHeartCheck != null)
                         {
                             message.Msg = "heartCheck";
-                            clientHeartCheck.SendMsg<string>(JsonConvert.SerializeObject(message));
+                            clientHeartCheck.SendMsg<string>(JsonConvert.SerializeObject(message), currentSocket);
                         }
                         break;
                     case MsgType.System:
@@ -435,22 +455,57 @@ namespace NetApi.Common
         public string TargetId { get; set; }
 
         /// <summary>
-        /// websocket实例
+        /// websocket实例数组
         /// </summary>
-        public WebSocket socket { get; set; }
+        public List<WebSocket> socketList { get; set; }
 
         /// <summary>
-        /// 发送消息
+        /// 发送消息（除自己）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="msg"></param>
+        /// <param name="currentSocket"></param>
+        public void SendMsg<T>(T msg, WebSocket currentSocket)
+        {
+            if (typeof(T).Equals(typeof(string)))
+            {
+                if (socketList.Count > 0)
+                {
+                    var otherSocket = socketList.Where(m => m != currentSocket);
+                    if (otherSocket.Any())
+                    {
+                        otherSocket.ToList().ForEach(m =>
+                        {
+                            if (m.State == WebSocketState.Open)
+                            {
+                                var msgs = Encoding.UTF8.GetBytes(msg as string);
+                                m.SendAsync(new ArraySegment<byte>(msgs), WebSocketMessageType.Text, true, CancellationToken.None);
+                            }
+                        });
+                    };
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// 广播消息
         /// </summary>
         /// <param name="msg"></param>
         public void SendMsg<T>(T msg)
         {
             if (typeof(T).Equals(typeof(string)))
             {
-                if (socket != null && socket.State == WebSocketState.Open)
+                if (socketList.Count > 0)
                 {
-                    var msgs = Encoding.UTF8.GetBytes(msg as string);
-                    socket.SendAsync(new ArraySegment<byte>(msgs), WebSocketMessageType.Text, true, CancellationToken.None);
+                    socketList.ToList().ForEach(m =>
+                    {
+                        if (m.State == WebSocketState.Open)
+                        {
+                            var msgs = Encoding.UTF8.GetBytes(msg as string);
+                            m.SendAsync(new ArraySegment<byte>(msgs), WebSocketMessageType.Text, true, CancellationToken.None);
+                        }
+                    });
                 }
             }
         }

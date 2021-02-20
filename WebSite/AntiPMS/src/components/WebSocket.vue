@@ -110,7 +110,7 @@ export default {
   },
   created: function () {
     // init sendMsg object
-    this.sendMsg.senderId = this.guid() // 'qinko'
+    this.sendMsg.senderId = 'asdddd' // 'qinko'
     this.sendMsg.senderName = this.sendMsg.senderId// this.guid().substring(4)
     this.sendMsg.targetId = '5'
     this.getLenth()
@@ -164,7 +164,9 @@ export default {
       }
       this.socket.onmessage = function (e) {
         var rmsg = JSON.parse(e.data)
-        if (rmsg['MsgType'] == '6') {
+        if (rmsg['MsgType'].toString() === '6') {
+
+        } else {
           app.receiveMsgText.push(
             {
               Id: rmsg['Id'],
