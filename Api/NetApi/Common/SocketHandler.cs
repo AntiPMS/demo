@@ -220,7 +220,7 @@ namespace NetApi.Common
                 oldClient.socketList = newSocketList;
                 client = oldClient;
             }
-            //SendHisMessage(client, webSocket);//发送历史消息
+            SendHisMessage(client, webSocket);//发送历史消息
         }
 
         /// <summary>
