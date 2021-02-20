@@ -129,12 +129,11 @@ namespace NetApi.Common
         public WebSocketClient GetBySenderId(string senderId);
 
         /// <summary>
-        /// 根据目标Id查找除发送人之外的所有websocket实例
+        /// 根据目标Id查找websocket实例
         /// </summary>
-        /// <param name="senderId">发送人Id</param>
         /// <param name="targetId">目标Id</param>
         /// <returns></returns>
-        public IEnumerable<WebSocketClient> GetByTargetId(string senderId, string targetId);
+        public IEnumerable<WebSocketClient> GetByTargetId(string targetId);
 
         /// <summary>
         /// 获取当前所有在线socket
@@ -229,12 +228,11 @@ namespace NetApi.Common
         public WebSocketClient GetBySenderId(string senderId) => _clients.FirstOrDefault(c => c.Id == senderId);
 
         /// <summary>
-        /// 根据目标Id查找除发送人之外的所有websocket实例
+        /// 根据目标Id查找websocket实例
         /// </summary>
-        /// <param name="senderId">发送人Id</param>
         /// <param name="targetId">目标Id</param>
         /// <returns></returns>
-        public IEnumerable<WebSocketClient> GetByTargetId(string senderId, string targetId) => _clients.Where(m => m.TargetId == targetId && m.Id != senderId);
+        public IEnumerable<WebSocketClient> GetByTargetId(string targetId) => _clients.Where(m => m.TargetId == targetId);
 
         /// <summary>
         /// 获取当前所有在线socket
@@ -287,7 +285,7 @@ namespace NetApi.Common
                             Msg = m.Msg,
                             SendDate = m.SendDate
                         };
-                        client.SendMsg(JsonConvert.SerializeObject(message), currentSocket);
+                        client.SendMsg(JsonConvert.SerializeObject(message));
                     });
                 }
             }
@@ -337,14 +335,14 @@ namespace NetApi.Common
                         {
                             Save2DataBase(client.Id, client.TargetId, message.MsgType, message.Msg);
 
-                            var clients = GetByTargetId(client.Id, client.TargetId);
+                            var clients = GetByTargetId(client.TargetId);
                             if (clients.Any())
                             {
                                 //群组广播发送
                                 var clientList = clients.ToList();
                                 clientList.ForEach(c =>
                                 {
-                                    c.SendMsg<string>(JsonConvert.SerializeObject(message));
+                                    c.SendMsg<string>(JsonConvert.SerializeObject(message), currentSocket);
                                 });
                             }
                             else
@@ -363,13 +361,13 @@ namespace NetApi.Common
                         if (clientHeartCheck != null)
                         {
                             message.Msg = "heartCheck";
-                            clientHeartCheck.SendMsg<string>(JsonConvert.SerializeObject(message), currentSocket);
+                            clientHeartCheck.HeartCheck(JsonConvert.SerializeObject(message), currentSocket);
                         }
                         break;
                     case MsgType.System:
                         Save2DataBase(message.SenderId, message.TargetId, message.MsgType, message.Msg);
 
-                        var clientSys = GetByTargetId(message.SenderId, message.TargetId);
+                        var clientSys = GetByTargetId(message.TargetId);
                         if (clientSys.Any())
                         {
                             //群组广播发送
@@ -509,6 +507,18 @@ namespace NetApi.Common
                 }
             }
         }
+
+        /// <summary>
+        /// 心跳检测
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="currentSocket"></param>
+        public void HeartCheck(string msg, WebSocket currentSocket)
+        {
+            var msgs = Encoding.UTF8.GetBytes(msg);
+            currentSocket.SendAsync(new ArraySegment<byte>(msgs), WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+
     }
 
     /// <summary>
