@@ -90,6 +90,7 @@ namespace NetApi.Common
                 if (result.MessageType == WebSocketMessageType.Text && !result.CloseStatus.HasValue)
                 {
                     var messageModel = JsonConvert.DeserializeObject<WebSocketClientModel>(webSocketData); //json序列化
+                    messageModel.SendDate = DateTime.Now;
                     _wsManage.SendMsg(messageModel, client, out isSendSuccess); //消息交给路由发送
                     if (isSendSuccess)
                     {
