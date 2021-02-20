@@ -90,7 +90,7 @@ namespace NetApi.Common
                 if (result.MessageType == WebSocketMessageType.Text && !result.CloseStatus.HasValue)
                 {
                     var messageModel = JsonConvert.DeserializeObject<WebSocketClientModel>(webSocketData); //json序列化
-                    _wsManage.SendMsg(messageModel, out isSendSuccess); //消息交给路由发送
+                    _wsManage.SendMsg(messageModel, client, out isSendSuccess); //消息交给路由发送
                     if (isSendSuccess)
                     {
                         //消息已读。
@@ -142,11 +142,19 @@ namespace NetApi.Common
         public IEnumerable<WebSocketClient> GetCurrentAll();
 
         /// <summary>
-        /// 发送消息给客户端
+        /// 发送消息给所有客户端
         /// </summary>
         /// <param name="model"></param>
         /// <param name="isSuccess"></param>
         public void SendMsg(WebSocketClientModel model, out bool isSuccess);
+
+        /// <summary>
+        /// 发送消息给客户端(除自己)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="currentClient"></param>
+        /// <param name="isSuccess"></param>
+        public void SendMsg(WebSocketClientModel model, WebSocket currentClient, out bool isSuccess);
 
         /// <summary>
         /// 消息类型枚举
@@ -241,11 +249,19 @@ namespace NetApi.Common
         public IEnumerable<WebSocketClient> GetCurrentAll() => _clients.ToList();
 
         /// <summary>
-        /// 发送消息给客户端
+        /// 发送消息给所有客户端
         /// </summary>
         /// <param name="model"></param>
         /// <param name="isSuccess"></param>
         public void SendMsg(WebSocketClientModel model, out bool isSuccess) => MessageRoute(model, null, out isSuccess);
+
+        /// <summary>
+        /// 发送消息给客户端(除自己)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="currentClient"></param>
+        /// <param name="isSuccess"></param>
+        public void SendMsg(WebSocketClientModel model, WebSocket currentClient, out bool isSuccess) => MessageRoute(model, currentClient, out isSuccess);
 
         /// <summary>
         /// 消息类型枚举
@@ -261,7 +277,7 @@ namespace NetApi.Common
             return result;
         }
 
-        private void SendHisMessage(WebSocketClient client,WebSocket currentSocket)
+        private void SendHisMessage(WebSocketClient client, WebSocket currentSocket)
         {
             using (var db = new NetApiContextForMsg(_conf))
             {
