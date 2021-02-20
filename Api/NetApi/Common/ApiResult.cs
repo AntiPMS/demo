@@ -33,6 +33,58 @@ namespace NetApi.Common
     }
 
     /// <summary>
+    /// 接口返参统一格式
+    /// </summary>
+    public class OutPut
+    {
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public EnumStatus ResultStatus { get; set; }
+
+        /// <summary>
+        /// 返回消息
+        /// </summary>
+        public string msg { get; set; }
+
+        /// <summary>
+        /// 返回数据
+        /// </summary>
+        public List<object> ResultData { get; set; }
+
+        /// <summary>
+        /// 总数
+        /// </summary>
+        public int TotalCount { get; set; }
+    }
+
+    /// <summary>
+    /// 接口返参统一格式
+    /// </summary>
+    public class OutPut<T> where T : class
+    {
+        /// <summary>
+        /// 返回状态
+        /// </summary>
+        public EnumStatus ResultStatus { get; set; }
+
+        /// <summary>
+        /// 返回消息
+        /// </summary>
+        public string msg { get; set; }
+
+        /// <summary>
+        /// 返回数据
+        /// </summary>
+        public T ResultData { get; set; }
+
+        /// <summary>
+        /// 返回总数
+        /// </summary>
+        public int TotalCount { get; set; }
+    }
+
+    /// <summary>
     /// 状态枚举类 [状态码说明](https://httpstatuses.com/)
     /// </summary>
     public enum EnumStatus

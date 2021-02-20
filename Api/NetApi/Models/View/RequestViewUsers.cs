@@ -67,4 +67,25 @@ namespace NetApi.Models.View
         /// </summary>
         public sbyte? Sex { get; set; }
     }
+
+    /// <summary>
+    /// 发送消息模型
+    /// </summary>
+    public class MsgUserInfo
+    {
+        /// <summary>
+        /// 目标主键(咨询主键)
+        /// </summary>
+        public string userId { get; set; }
+
+        ///// <summary>
+        ///// 纯文本消息=1、图片=2、系统发送的消息=7
+        ///// </summary>
+        //public MsgType msgType { get; set; }
+
+        /// <summary>
+        /// 具体消息
+        /// </summary>
+        public string msg { get; set; }
+    }
 }

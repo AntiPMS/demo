@@ -287,5 +287,215 @@ namespace NetApi.Business
             return result;
         }
 
+
+        /// <summary>
+        /// 消息置为已读
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="msgIdList">消息主键数组</param>
+        /// <param name="socket">目前在线的socket</param>
+        /// <returns></returns>
+        public static OutPut SetMsgIsRead(NetApiContext db, List<string> msgIdList, IWebsocketManager socket)
+        {
+
+            OutPut op = new OutPut()
+            {
+                ResultStatus = EnumStatus.OK,
+                TotalCount = 0
+            };
+
+            try
+            {
+                if (msgIdList == null || msgIdList.Count < 1)
+                {
+                    op.msg = "主键不能为空!";
+                    op.ResultStatus = EnumStatus.NotFound;
+                }
+                else
+                {
+                    var msg = db.UserMsg.Where(m => msgIdList.Contains(m.Id) && m.IsRead == 0);
+                    if (msg.Any())
+                    {
+                        msg.ToList().ForEach(m => m.IsRead = 1);
+                        db.SaveChanges();
+                        op.msg = "修改成功!";
+                    }
+                    else
+                    {
+                        op.ResultStatus = EnumStatus.NotFound;
+                        op.msg = "记录已修改!";
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                op.ResultStatus = EnumStatus.InternalServerError;
+                op.msg = e.Message;
+            }
+
+            return op;
+        }
+
+        /// <summary>
+        /// 历史消息查询
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="lastSendDate">最早消息的日期(精确到秒)</param>
+        /// <param name="targetId">取咨询的主键</param>
+        /// <param name="num">本次读取的消息数</param>
+        /// <returns></returns>
+        public static OutPut<List<UserMsg>> GetUserHisChatMsgBySendDateDecreasing(NetApiContext db, DateTime lastSendDate, string targetId, int num)
+        {
+            OutPut<List<UserMsg>> op = new OutPut<List<UserMsg>>() { ResultStatus = EnumStatus.OK };
+            try
+            {
+                num = num < 1 ? 20 : num;
+                var hisMsg = db.UserMsg
+                               .Where(m => m.TargetId == targetId && m.SendDate < lastSendDate)
+                               .OrderByDescending(m => m.SendDate)
+                               .Take(num)
+                               .Select(m => new UserMsg
+                               {
+                                   Id = m.Id,
+                                   SenderId = m.SenderId,
+                                   TargetId = m.TargetId,
+                                   MsgType = m.MsgType,
+                                   Msg = m.Msg,
+                                   SendDate = m.SendDate,
+                                   IsRead = m.IsRead,
+                               });
+                if (hisMsg.Any())
+                {
+                    op.msg = "查询成功!";
+                    op.ResultData = hisMsg.ToList();
+                    op.TotalCount = op.ResultData.Count();
+                }
+                else
+                {
+                    op.msg = "没有更多了...";
+                    op.ResultStatus = EnumStatus.NotFound;
+                }
+            }
+            catch (Exception e)
+            {
+                op.msg = e.Message;
+                op.ResultStatus = EnumStatus.InternalServerError;
+            }
+            return op;
+        }
+
+        /// <summary>
+        /// 发送系统消息
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="socket"></param>
+        /// <param name="info">消息内容</param>
+        /// <returns></returns>
+        public static OutPut SendMsg2User(NetApiContext db, IWebsocketManager socket, MsgUserInfo info)
+        {
+            OutPut op = new OutPut() { TotalCount = 0 };
+
+            try
+            {
+                bool isOK;
+                socket.SendMsg(new WebSocketClientModel
+                {
+                    TargetId = info.userId,
+                    MsgType = MsgType.System,
+                    Msg = info.msg,
+                    SendDate = DateTime.Now,
+                    SenderId = "-1",
+                    SenderName = "System"
+                }, out isOK);
+
+                if (isOK)
+                {
+                    op.ResultStatus = EnumStatus.OK;
+                    op.msg = "发送成功";
+                }
+                else
+                {
+                    op.ResultStatus = EnumStatus.InternalServerError;
+                    op.msg = "发送失败";
+                }
+            }
+            catch (Exception e)
+            {
+                op.ResultStatus = EnumStatus.InternalServerError;
+                op.msg = e.Message;
+            }
+            return op;
+        }
+
+        /// <summary>
+        /// 获取消息
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="targetId">接收人Id</param>
+        /// <param name="msgType">消息类型</param>
+        /// <returns></returns>
+        public static OutPut<List<userMsg>> GetUserMsg(NetApiContext db, string targetId, MsgType msgType)
+        {
+            OutPut<List<userMsg>> op = new OutPut<List<userMsg>>() { ResultStatus = EnumStatus.OK, TotalCount = 0 };
+
+            try
+            {
+                var _msgType = (sbyte)msgType;
+                var data = db.UserMsg
+                             .Where(m => m.TargetId == targetId && m.MsgType == _msgType)
+                             .Select(m => new userMsg
+                             {
+                                 Id = m.Id,
+                                 SenderId = m.SenderId,
+                                 TargetId = m.TargetId,
+                                 MsgType = m.MsgType,
+                                 msg = m.Msg,
+                                 SendDate = m.SendDate,
+                                 IsRead = m.IsRead,
+                             });
+                if (data.Any())
+                {
+                    op.ResultData = data.ToList();
+                    op.TotalCount = op.ResultData.Count;
+                    op.msg = "查询成功!";
+                }
+                else
+                {
+                    op.ResultStatus = EnumStatus.NotFound;
+                    op.msg = "暂无数据!";
+                }
+            }
+            catch (Exception e)
+            {
+                op.ResultStatus = EnumStatus.InternalServerError;
+                op.msg = e.Message;
+            }
+            return op;
+        }
+
+        /// <summary>
+        /// 消息类型枚举
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <returns></returns>
+        public static OutPut<Dictionary<string, int>> GetMsgTypeEnum(IWebsocketManager socket)
+        {
+            OutPut<Dictionary<string, int>> op = new OutPut<Dictionary<string, int>>() { TotalCount = 0 };
+
+            try
+            {
+                op.ResultStatus = EnumStatus.OK;
+                op.ResultData = socket.GetMsgTypeEnum();
+                op.TotalCount = op.ResultData.Count;
+                op.msg = "查询成功!";
+            }
+            catch (Exception e)
+            {
+                op.ResultStatus = EnumStatus.InternalServerError;
+                op.msg = e.Message;
+            }
+            return op;
+        }
+
     }
 }

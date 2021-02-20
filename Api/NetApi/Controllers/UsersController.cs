@@ -224,5 +224,43 @@ namespace NetApi.Controllers
         {
             return _wsManage.GetCurrentAll();
         }
+
+
+        /// <summary>
+        /// 历史消息查询
+        /// </summary>
+        /// <param name="lastSendDate">最早消息的日期(精确到秒)</param>
+        /// <param name="targetId">取咨询的主键</param>
+        /// <param name="num">本次读取的消息数(≥1)</param>
+        /// <returns></returns>
+        [HttpGet]
+        public OutPut<List<UserMsg>> GetUserHisChatMsgBySendDateDecreasing(DateTime lastSendDate, string targetId, int num)
+            => Users.GetUserHisChatMsgBySendDateDecreasing(_context, lastSendDate, targetId, num);
+
+        /// <summary>
+        /// 发送系统消息
+        /// </summary>
+        /// <param name="info">消息内容</param>
+        /// <returns></returns>
+        [HttpPost]
+        public OutPut SendMsg2User(MsgUserInfo info)
+            => Users.SendMsg2User(_context, _wsManage, info);
+
+        /// <summary>
+        /// 系统消息查询
+        /// </summary>
+        /// <param name="userId">当前用户Id，即targetId</param>
+        /// <returns></returns>
+        [HttpGet]
+        public OutPut<List<userMsg>> GetSystemMsg(string userId)
+            => Users.GetUserMsg(_context, userId, MsgType.System);
+
+        /// <summary>
+        /// 消息类型枚举
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public OutPut<Dictionary<string, int>> GetMsgTypeEnum()
+            => Users.GetMsgTypeEnum(_wsManage);
     }
 }
