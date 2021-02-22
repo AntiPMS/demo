@@ -363,7 +363,8 @@ namespace NetApi.Business
                                    Msg = m.Msg,
                                    SendDate = m.SendDate,
                                    IsRead = m.IsRead,
-                               });
+                               })
+                               .OrderBy(m => m.SendDate);
                 if (hisMsg.Any())
                 {
                     op.msg = "查询成功!";
