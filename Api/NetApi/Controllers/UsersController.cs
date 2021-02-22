@@ -234,6 +234,7 @@ namespace NetApi.Controllers
         /// <param name="num">本次读取的消息数(≥1)</param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public OutPut<List<UserMsg>> GetUserHisChatMsgBySendDateDecreasing(DateTime lastSendDate, string targetId, int num)
             => Users.GetUserHisChatMsgBySendDateDecreasing(_context, lastSendDate, targetId, num);
 
@@ -243,6 +244,7 @@ namespace NetApi.Controllers
         /// <param name="info">消息内容</param>
         /// <returns></returns>
         [HttpPost]
+        [AllowAnonymous]
         public OutPut SendMsg2User(MsgUserInfo info)
             => Users.SendMsg2User(_context, _wsManage, info);
 
@@ -252,6 +254,7 @@ namespace NetApi.Controllers
         /// <param name="userId">当前用户Id，即targetId</param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public OutPut<List<userMsg>> GetSystemMsg(string userId)
             => Users.GetUserMsg(_context, userId, MsgType.System);
 
@@ -260,6 +263,7 @@ namespace NetApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public OutPut<Dictionary<string, int>> GetMsgTypeEnum()
             => Users.GetMsgTypeEnum(_wsManage);
     }
