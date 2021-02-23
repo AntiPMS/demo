@@ -4,7 +4,9 @@ using NetApi.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -318,14 +320,46 @@ namespace NetApi.Common
                 {
                     try
                     {
-                        db.UserMsg.Add(new UserMsg
+                        if (msgType == MsgType.Img)
                         {
-                            Id = Guid.NewGuid().ToString(),
-                            SenderId = senderId,
-                            TargetId = targetId,
-                            MsgType = (sbyte)msgType,
-                            Msg = msg,
-                        });
+                            string fileLocation = "Test/";
+                            List<string> paramData = new List<string>() { msg };
+
+                            HttpWebRequest request = WebRequest.Create(string.Format(_conf["Appsettings:UploadBase64Files2FileSystem"], fileLocation)) as HttpWebRequest;
+                            request.Method = "Post".ToUpperInvariant();
+                            request.ContentType = "application/json";
+                            byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(paramData));
+                            request.ContentLength = buffer.Length;
+                            request.GetRequestStream().Write(buffer, 0, buffer.Length);
+
+                            using (HttpWebResponse resp = request.GetResponse() as HttpWebResponse)
+                            {
+                                using (StreamReader stream = new StreamReader(resp.GetResponseStream(), Encoding.UTF8))
+                                {
+                                    string result = stream.ReadToEnd();
+                                    stream.Close();
+                                    db.UserMsg.Add(new UserMsg
+                                    {
+                                        Id = Guid.NewGuid().ToString(),
+                                        SenderId = senderId,
+                                        TargetId = targetId,
+                                        MsgType = (sbyte)msgType,
+                                        Msg = JsonConvert.DeserializeObject<List<string>>(result).FirstOrDefault(),
+                                    });
+                                }
+                            }
+                        }
+                        else
+                        {
+                            db.UserMsg.Add(new UserMsg
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                SenderId = senderId,
+                                TargetId = targetId,
+                                MsgType = (sbyte)msgType,
+                                Msg = msg,
+                            });
+                        }
                         db.SaveChanges();
                         tran.Commit();
                     }
