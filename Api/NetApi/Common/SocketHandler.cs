@@ -123,11 +123,12 @@ namespace NetApi.Common
         public void Remove(WebSocketClient client);
 
         /// <summary>
-        /// 根据发送人Id查找websocket实例
+        /// 根据发送人Id及目标Id查找websocket实例
         /// </summary>
         /// <param name="senderId"></param>
+        /// <param name="targetId"></param>
         /// <returns></returns>
-        public WebSocketClient GetBySenderId(string senderId);
+        public WebSocketClient GetSender(string senderId, string targetId);
 
         /// <summary>
         /// 根据目标Id查找websocket实例
@@ -374,10 +375,12 @@ namespace NetApi.Common
                         }
                         break;
                     case MsgType.HeartCheck:
-                        GetBySenderId(message.SenderId).SendMsg<string>(JsonConvert.SerializeObject(message), currentSocket);
-                        var clientHeartCheck = GetBySenderId(message.SenderId);
+                        var clientHeartCheck = GetSender(message.SenderId, message.TargetId);
                         if (clientHeartCheck != null)
                         {
+                            message.SenderId = "system";
+                            message.SenderName = "system";
+                            message.MsgType = MsgType.HeartCheck;
                             message.Msg = "heartCheck";
                             clientHeartCheck.SendMsg2Self(JsonConvert.SerializeObject(message), currentSocket);
                         }
@@ -397,7 +400,7 @@ namespace NetApi.Common
                         }
                         break;
                     case MsgType.Exit:
-                        var extClient = GetBySenderId(message.SenderId);
+                        var extClient = GetSender(message.SenderId, message.TargetId);
                         extClient.SendMsg<string>(JsonConvert.SerializeObject(new WebSocketClientModel { }));
                         break;
                     default:
