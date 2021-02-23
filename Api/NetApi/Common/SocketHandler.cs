@@ -230,11 +230,12 @@ namespace NetApi.Common
         public void Remove(WebSocketClient client) => _clients.Remove(client);
 
         /// <summary>
-        /// 根据发送人Id查找websocket实例
+        /// 根据发送人Id及目标Id查找websocket实例
         /// </summary>
         /// <param name="senderId"></param>
+        /// <param name="targetId"></param>
         /// <returns></returns>
-        public WebSocketClient GetBySenderId(string senderId) => _clients.FirstOrDefault(c => c.Id == senderId);
+        public WebSocketClient GetSender(string senderId, string targetId) => _clients.FirstOrDefault(c => c.Id == senderId && c.TargetId == targetId);
 
         /// <summary>
         /// 根据目标Id查找websocket实例
@@ -347,7 +348,7 @@ namespace NetApi.Common
                     //    break;
                     case MsgType.Text:
                     case MsgType.Img:
-                        var client = GetBySenderId(message.SenderId);
+                        var client = GetSender(message.SenderId, message.TargetId);
                         if (client != null && !string.IsNullOrEmpty(client.TargetId))
                         {
                             Save2DataBase(client.Id, client.TargetId, message.MsgType, message.Msg);
