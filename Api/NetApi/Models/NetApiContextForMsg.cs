@@ -61,6 +61,12 @@ namespace NetApi.Models
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
 
+                entity.Property(e => e.SenderName)
+                   .HasColumnType("varchar(100)")
+                   .HasComment("发送人姓名")
+                   .HasCharSet("utf8")
+                   .HasCollation("utf8_general_ci");
+
                 entity.Property(e => e.TargetId)
                     .HasColumnType("varchar(100)")
                     .HasComment("接收者Id")

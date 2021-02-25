@@ -214,7 +214,7 @@ namespace NetApi.Common
 
                 oldClient.socketList.ForEach(m =>
                 {
-                    if (m.State == WebSocketState.Open)
+                    if (!m.CloseStatus.HasValue)
                     {
                         newSocketList.Add(m);
                     }
@@ -300,7 +300,7 @@ namespace NetApi.Common
                         WebSocketClientModel message = new WebSocketClientModel
                         {
                             SenderId = m.SenderId,
-                            SenderName = m.SenderId,
+                            SenderName = m.SenderName,
                             TargetId = m.TargetId,
                             MsgType = (MsgType)m.MsgType,
                             Msg = m.Msg,
@@ -312,7 +312,7 @@ namespace NetApi.Common
             }
         }
 
-        private void Save2DataBase(string senderId, string targetId, MsgType msgType, string msg)
+        private void Save2DataBase(string senderId, string senderName, string targetId, MsgType msgType, string msg)
         {
             using (var db = new NetApiContextForMsg(_conf))
             {
@@ -342,6 +342,7 @@ namespace NetApi.Common
                                     {
                                         Id = Guid.NewGuid().ToString(),
                                         SenderId = senderId,
+                                        SenderName = senderName,
                                         TargetId = targetId,
                                         MsgType = (sbyte)msgType,
                                         Msg = JsonConvert.DeserializeObject<List<string>>(result).FirstOrDefault(),
@@ -355,6 +356,7 @@ namespace NetApi.Common
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 SenderId = senderId,
+                                SenderName = senderName,
                                 TargetId = targetId,
                                 MsgType = (sbyte)msgType,
                                 Msg = msg,
@@ -386,7 +388,7 @@ namespace NetApi.Common
                         var client = GetSender(message.SenderId, message.TargetId);
                         if (client != null && !string.IsNullOrEmpty(client.TargetId))
                         {
-                            Save2DataBase(client.Id, client.TargetId, message.MsgType, message.Msg);
+                            Save2DataBase(client.Id, message.SenderName, client.TargetId, message.MsgType, message.Msg);
 
                             var clients = GetByTargetId(client.TargetId);
                             if (clients.Any())
@@ -420,7 +422,7 @@ namespace NetApi.Common
                         }
                         break;
                     case MsgType.System:
-                        Save2DataBase(message.SenderId, message.TargetId, message.MsgType, message.Msg);
+                        Save2DataBase(message.SenderId, message.SenderName, message.TargetId, message.MsgType, message.Msg);
 
                         var clientSys = GetByTargetId(message.TargetId);
                         if (clientSys.Any())

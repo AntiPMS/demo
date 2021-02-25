@@ -7,6 +7,7 @@ namespace NetApi.Models
     {
         public string Id { get; set; }
         public string SenderId { get; set; }
+        public string SenderName { get; set; }
         public string TargetId { get; set; }
         public sbyte? MsgType { get; set; }
         public string Msg { get; set; }
