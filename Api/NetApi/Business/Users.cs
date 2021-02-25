@@ -358,6 +358,7 @@ namespace NetApi.Business
                                {
                                    Id = m.Id,
                                    SenderId = m.SenderId,
+                                   SenderName = m.SenderName,
                                    TargetId = m.TargetId,
                                    MsgType = m.MsgType,
                                    Msg = m.Msg,
