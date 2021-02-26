@@ -26,7 +26,8 @@
           <div style="float: left">
             <label style="color:#3f9775;font-size: 12px; margin: 0 5px;">{{msgtext.senderName}}</label>
             <br>
-            <p class="doctorCommunicationInputs">
+            <p class="doctorCommunicationInputs"
+               :style='{width:msgtext.msg.length*15+"px"}'>
               {{ msgtext.msg }}
             </p>
           </div>
@@ -37,7 +38,8 @@
           <div style="float: right;text-align: right">
             <label style="color:#3f9775;font-size: 12px; margin: 0 5px;">{{msgtext.senderName}}</label>
             <p class="customerCommunicationInputs"
-               style="text-align: left">
+               style="text-align: right"
+               :style='{width:msgtext.msg.length*15+"px"}'>
               {{ msgtext.msg }}
             </p>
           </div>
@@ -471,7 +473,7 @@ export default {
   padding: 0 5px;
 }
 </style>
-<style  lang="less">
+<style scoped lang="less">
 @import "../style/var.less";
 .van-cell::after {
   border-bottom: 0;
