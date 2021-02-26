@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NetApi.Common;
 using NetApi.Models;
 using NetApi.Models.View;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -404,7 +405,7 @@ namespace NetApi.Business
                 {
                     TargetId = info.userId,
                     MsgType = MsgType.System,
-                    Msg = info.msg,
+                    Msg = JsonConvert.SerializeObject(info.msg),
                     SendDate = DateTime.Now,
                     SenderId = "-1",
                     SenderName = "System"
