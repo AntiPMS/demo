@@ -77,12 +77,13 @@
       <van-col>
         <van-uploader :after-read="afterRead">
           <van-icon name="photo-o"
-                    size="35px" />
+                    size="35px"
+                    style='padding-top:3px' />
         </van-uploader>
       </van-col>
       <van-button v-on:click="doSend"
                   type="primary"
-                  style="float:right;margin-right: 10px;margin-top: 5px">发送</van-button>
+                  style="float:right;margin-left: 15px;margin-top: 7px;height:28px">发送</van-button>
     </div>
   </div>
 </template>
@@ -470,7 +471,7 @@ export default {
   padding: 0 5px;
 }
 </style>
-<style scoped lang="less">
+<style  lang="less">
 @import "../style/var.less";
 .van-cell::after {
   border-bottom: 0;
@@ -491,5 +492,20 @@ export default {
   border-radius: 8px;
   margin: 0 5px;
   max-width: 65vw;
+}
+.van-button::before  {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  border: inherit;
+  border-color: #000;
+  border-radius: inherit;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  content: " ";
 }
 </style>
