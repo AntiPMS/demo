@@ -86,6 +86,19 @@ namespace NetApi.Models.View
         /// <summary>
         /// 具体消息
         /// </summary>
-        public string msg { get; set; }
+        public SystemInfo msg { get; set; }
+    }
+
+    public class SystemInfo
+    {
+        /// <summary>
+        /// 标题
+        /// </summary>
+        public string title { get; set; }
+
+        /// <summary>
+        /// 内容
+        /// </summary>
+        public string content { get; set; }
     }
 }

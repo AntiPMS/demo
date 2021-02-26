@@ -385,6 +385,7 @@ namespace NetApi.Common
                     //    break;
                     case MsgType.Text:
                     case MsgType.Img:
+                    case MsgType.Voice:
                         var client = GetSender(message.SenderId, message.TargetId);
                         if (client != null && !string.IsNullOrEmpty(client.TargetId))
                         {
@@ -467,6 +468,11 @@ namespace NetApi.Common
         /// 图片
         /// </summary>
         Img = 2,
+
+        /// <summary>
+        /// 语音
+        /// </summary>
+        Voice = 3,
 
         /// <summary>
         /// 心跳检测
