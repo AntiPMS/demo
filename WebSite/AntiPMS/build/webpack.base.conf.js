@@ -77,7 +77,17 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        loader: 'style-loader!css-loader!less-loader'
+        use: [
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                strictMath: true,
+                noIeCompat: true
+              }
+            }
+          }
+        ]
       }
     ]
   },
