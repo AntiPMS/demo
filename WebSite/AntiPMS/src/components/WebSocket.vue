@@ -493,7 +493,7 @@ export default {
   margin: 0 5px;
   max-width: 65vw;
 }
-.van-button::before  {
+.van-button::before {
   position: absolute;
   top: 50%;
   left: 50%;
