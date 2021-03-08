@@ -127,7 +127,7 @@ namespace NetApi
             services.AddSingleton<IJwtAuthManager>(m => new JwtAuthManager(jwtTokenConfig));
             #endregion
 
-            #region 添加socket管理服务
+            #region 添加websocket管理服务
             services.AddSingleton<IWebsocketManager, WebsocketManager>();
             #endregion
 

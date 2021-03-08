@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using NetApi.Models;
+using NetApi.Models.View;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,12 +23,22 @@ namespace NetApi.Common
         private readonly RequestDelegate _next;
         private readonly IWebsocketManager _wsManage;
 
+        /// <summary>
+        /// 构造函数,注入消息管理类
+        /// </summary>
+        /// <param name="wsManage">消息管理类</param>
+        /// <param name="next"></param>
         public MyWebSocketMiddleware(IWebsocketManager wsManage, RequestDelegate next)
         {
             _next = next;
             _wsManage = wsManage;
         }
 
+        /// <summary>
+        /// 根据路由 获取websocket实例并管理起来
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Invoke(HttpContext context)
         {
             if (context.Request.Path == "/ws")
@@ -312,18 +323,20 @@ namespace NetApi.Common
             }
         }
 
-        private void Save2DataBase(string senderId, string senderName, string targetId, MsgType msgType, string msg)
+        private string Save2DataBase(string senderId, string senderName, string targetId, MsgType msgType, string msg)
         {
+            string returnStr = string.Empty;
             using (var db = new NetApiContextForMsg(_conf))
             {
                 using (var tran = db.Database.BeginTransaction())
                 {
                     try
                     {
+                        #region if 是图片 => 存至服务器
                         if (msgType == MsgType.Img)
                         {
                             string fileLocation = "Test/";
-                            List<string> paramData = new List<string>() { msg };
+                            List<Base64FileModel> paramData = new List<Base64FileModel> { new Base64FileModel() { name = "random.jpg", content = msg } };
 
                             HttpWebRequest request = WebRequest.Create(string.Format(_conf["Appsettings:UploadBase64Files2FileSystem"], fileLocation)) as HttpWebRequest;
                             request.Method = "Post".ToUpperInvariant();
@@ -338,7 +351,7 @@ namespace NetApi.Common
                                 {
                                     string result = stream.ReadToEnd();
                                     stream.Close();
-                                    db.UserMsg.Add(new UserMsg
+                                    var newUserMsg = new UserMsg
                                     {
                                         Id = Guid.NewGuid().ToString(),
                                         SenderId = senderId,
@@ -346,10 +359,14 @@ namespace NetApi.Common
                                         TargetId = targetId,
                                         MsgType = (sbyte)msgType,
                                         Msg = JsonConvert.DeserializeObject<List<string>>(result).FirstOrDefault(),
-                                    });
+                                    };
+                                    db.UserMsg.Add(newUserMsg);
+                                    returnStr = newUserMsg.Msg;
                                 }
                             }
                         }
+                        #endregion
+                        #region else => 原样保存
                         else
                         {
                             db.UserMsg.Add(new UserMsg
@@ -362,6 +379,7 @@ namespace NetApi.Common
                                 Msg = msg,
                             });
                         }
+                        #endregion
                         db.SaveChanges();
                         tran.Commit();
                     }
@@ -371,6 +389,7 @@ namespace NetApi.Common
                     }
                 }
             }
+            return returnStr;
         }
 
         private void MessageRoute(WebSocketClientModel message, WebSocket currentSocket, out bool isSuccess)
@@ -384,14 +403,41 @@ namespace NetApi.Common
                     //    client.SendMsg(logJoin);
                     //    break;
                     case MsgType.Text:
-                    case MsgType.Img:
-                    case MsgType.Voice:
                         var client = GetSender(message.SenderId, message.TargetId);
                         if (client != null && !string.IsNullOrEmpty(client.TargetId))
                         {
                             Save2DataBase(client.Id, message.SenderName, client.TargetId, message.MsgType, message.Msg);
 
                             var clients = GetByTargetId(client.TargetId);
+                            if (clients.Any())
+                            {
+                                //群组广播发送
+                                var clientList = clients.ToList();
+                                clientList.ForEach(c =>
+                                {
+                                    c.SendMsg<string>(JsonConvert.SerializeObject(message), currentSocket);
+                                });
+                            }
+                            else
+                            {
+                                isSuccess = false;
+                            }
+                        }
+                        else
+                        {
+                            isSuccess = false;
+                        }
+                        break;
+                    case MsgType.Img:
+                    case MsgType.Voice:
+                        //图片和语音，直接返回文件服务器的地址
+                        var fileClient = GetSender(message.SenderId, message.TargetId);
+                        if (fileClient != null && !string.IsNullOrEmpty(fileClient.TargetId))
+                        {
+                            var fileUrl = Save2DataBase(fileClient.Id, message.SenderName, fileClient.TargetId, message.MsgType, message.Msg);
+                            message.Msg = fileUrl;
+
+                            var clients = GetByTargetId(fileClient.TargetId);
                             if (clients.Any())
                             {
                                 //群组广播发送
@@ -588,7 +634,7 @@ namespace NetApi.Common
     }
 
     /// <summary>
-    /// websocket客户端 请求、相应消息模型
+    /// websocket客户端 请求、响应消息模型
     /// </summary>
     public class WebSocketClientModel
     {

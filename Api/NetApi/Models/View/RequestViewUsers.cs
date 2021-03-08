@@ -101,4 +101,20 @@ namespace NetApi.Models.View
         /// </summary>
         public string content { get; set; }
     }
+
+    /// <summary>
+    /// 上传base64文件 入参模型
+    /// </summary>
+    public class Base64FileModel
+    {
+        /// <summary>
+        /// 文件名
+        /// </summary>
+        public string name { get; set; }
+
+        /// <summary>
+        /// base64串
+        /// </summary>
+        public string content { get; set; }
+    }
 }
