@@ -61,8 +61,13 @@ namespace NetApi
             #endregion
 
             #region 注册mysql数据库
+            //ILoggerFactory sqlLogFactory = LoggerFactory.Create(m => m.AddConsole());//打印sql到console便于debug
             services.AddDbContext<NetApiContext>(
-                op => op.UseMySql(Configuration.GetConnectionString("NetApiConnection"))//等价于Configuration["ConnectionStrings:NetApiConnection"]
+                op =>
+                {
+                    op.UseMySql(Configuration.GetConnectionString("NetApiConnection"));//等价于Configuration["ConnectionStrings:NetApiConnection"]
+                    //op.UseLoggerFactory(sqlLogFactory);
+                }
             );
             #endregion
 
