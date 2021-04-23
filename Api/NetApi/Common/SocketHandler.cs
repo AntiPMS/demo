@@ -317,7 +317,7 @@ namespace NetApi.Common
                             Msg = m.Msg,
                             SendDate = m.SendDate
                         };
-                        client.SendMsg2Self<string>(JsonConvert.SerializeObject(message), currentSocket);
+                        client.SendMsg2Self(JsonConvert.SerializeObject(message), currentSocket);
                     });
                 }
             }
@@ -399,9 +399,6 @@ namespace NetApi.Common
             {
                 switch (message.MsgType)
                 {
-                    //case MsgType.Join:
-                    //    client.SendMsg(logJoin);
-                    //    break;
                     case MsgType.Text:
                         var client = GetSender(message.SenderId, message.TargetId);
                         if (client != null && !string.IsNullOrEmpty(client.TargetId))
@@ -444,7 +441,7 @@ namespace NetApi.Common
                                 var clientList = clients.ToList();
                                 clientList.ForEach(c =>
                                 {
-                                    c.SendMsg<string>(JsonConvert.SerializeObject(message), currentSocket);
+                                    c.SendMsg(JsonConvert.SerializeObject(message), currentSocket);
                                 });
                             }
                             else

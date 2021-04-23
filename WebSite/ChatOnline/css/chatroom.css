@@ -1,0 +1,263 @@
+body {
+  /* background-image: linear-gradient(to bottom, rgba(122, 175, 185, 0.438), rgba(122, 176, 185, 0.822)); 
+  background-repeat:no-repeat;*/
+  overflow: hidden scroll;
+}
+
+/*定义滚动条高宽及背景
+ 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar  
+{  
+  width: 5px;  
+  height: 5px;
+}
+
+/*定义滚动条轨道
+  内阴影+圆角*/
+::-webkit-scrollbar-track  
+{  
+  border-radius: 10px;  
+  background-color: rgb(247, 244, 244);  
+}  
+
+/*定义滑块
+  内阴影+圆角*/
+::-webkit-scrollbar-thumb  
+{  
+  border-radius: 10px;  
+  background-color: rgb(173, 172, 172);
+}  
+
+.container{
+  display: flex;
+  height: 680px;
+  margin-top: 40px;
+  margin-right: calc(12%);
+  margin-left: calc(12%);
+  background-color: white;
+  border: 1px solid rgba(65, 64, 64, 0.5);
+  border-radius: 3px;
+  box-shadow: 0px 0px 20px 0 rgba(0,0,0,0.24),2px 2px 16px 0 rgba(0,0,0,0.16);
+}
+/*---------------- left tool Start ----------------*/
+.toolbar{
+  width: 65px;
+  border-radius: 3px 0px 0px 3px;
+  background-color: rgba(40,40,40,1);
+  box-sizing: border-box;
+}
+.my-avatar {
+  width: 35px;
+  margin-top: 20px;
+  margin-left: calc(12%);
+  margin-right: calc(12%);
+} 
+.my-avatar:hover{
+  cursor: pointer;
+} 
+/*---------------- left tool End ----------------*/
+/*---------------- channel Start ----------------*/
+.channel{
+  width: calc(35%);
+  box-sizing: border-box;
+}
+.channel-search{
+  padding: 20px 0 20px 5px;
+  height: calc(10%);
+  background-color: rgb(234, 234, 234);
+  box-sizing: border-box;
+}
+.channel-search img{
+  display:inline-block;
+  max-width:14px;
+  max-height:14px;
+  opacity: 0.5;
+  margin-bottom: -2px
+}
+.channel-search input{
+  width:calc(70%);
+  height:15px;
+  opacity: 0.5;
+  margin-bottom: -2px
+}
+.channel-search input:hover{
+  opacity: 0.8;
+}
+.channel-search input:active{
+  opacity: 1;
+}
+.channel-search input:focus{
+  opacity: 1;
+}
+.channel-search span{
+  position: relative;
+  left: -20px;
+  cursor: pointer;
+  size: 10px;
+  color: rgb(129,129,129,1);
+}
+.channel-panel{
+  height: calc(90%);
+  text-align: center;
+  color: black;
+  background-color: rgb(222, 222, 222);
+  overflow: hidden scroll;
+  
+  transition: 0.5s;
+}
+/* 定义滚动条滑块 鼠标出入的隐藏与显示 Start */
+.channel-panel::-webkit-scrollbar-thumb
+{ 
+  background-color: rgba(173, 172, 172, 0.2);    
+}
+.channel-panel:hover::-webkit-scrollbar-thumb
+{ 
+  background-color: rgba(173, 172, 172, 0.8);  
+} 
+/* 定义滚动条滑块 鼠标出入的隐藏与显示 End */
+.channel-list{
+  display: flex;
+  margin: 3px;
+  padding: 10px;
+  cursor: pointer;
+  color: black;
+}
+.channel-list span::selection{
+  color: black;
+}
+/* .channel-list:focus{
+  background-color: rgba(0, 0, 0, 0.1);
+} */
+.channel-list:hover{
+  -webkit-transform: translate(-2px,0);
+  transform: translate(-2px,0);
+  background-color: rgba(209, 209, 209);  
+
+  transition: 0.5s;
+}
+.channel-list[active=true]{
+  background-color: rgba(196,196,196,1);
+}
+.channel-list span:before{
+  content: '»';
+  position: relative;
+  right:10px;
+  opacity: 0;
+  top: 0;
+  color: black;
+
+  transition: 0.5s;
+}
+.channel-list:hover span::before{
+  opacity: 1;
+  right:5px;
+  color: black;
+
+  /* transition: 0.5s; */
+}
+/*---------------- channel End ----------------*/
+/*---------------- chat main Start ----------------*/
+.main-chat{
+  width: calc(100%);
+}
+.chat-title {
+  font-size: 20px;
+  padding: 10px 0 10px 15px;
+  height: calc(10%);
+  background-color: rgb(245,245,245);
+  border-width: 0px 0px 1px 0px;
+  border-style: solid;
+  border-color: rgba(0,0,0,0.16);
+  box-sizing: border-box;
+} 
+.chat-screen {
+  padding: 10px;
+  height: calc(70%);
+  background-color: rgb(245,245,245);
+  box-sizing: border-box;
+  overflow: hidden scroll;
+  resize:vertical;
+} 
+.chat-screen::-webkit-scrollbar-thumb
+{ 
+  background-color: rgba(173, 172, 172, 0.2);    
+}
+.chat-screen:hover::-webkit-scrollbar-thumb
+{ 
+  background-color: rgba(173, 172, 172, 0.8);  
+} 
+.chat-input{
+  height: calc(20%);
+  box-sizing: border-box;
+  border-width: 1px 0px 0px 0px;
+  border-style: solid;
+  border-color: rgba(0,0,0,0.16);
+  margin: 0px;
+  padding-left: 6px;
+  overflow: hidden scroll;
+  resize:vertical;
+}
+.chat-input::-webkit-scrollbar-thumb
+{ 
+  background-color: rgba(173, 172, 172, 0.2);    
+}
+.chat-input:hover::-webkit-scrollbar-thumb
+{ 
+  background-color: rgba(173, 172, 172, 0.8);  
+} 
+/*---------------- chat main End ----------------*/
+/*---------------- chat bubble Start ----------------*/
+.chat-list{
+  margin-top: 5px;
+}
+.chat-list > img {
+  margin: 15px 5px 0 5px;
+  max-width: 35px;
+  max-height: 35px;
+}
+.chat-list.left{
+  display: flex;
+  justify-content: flex-start;
+} 
+.chat-list.right{
+  display: flex;
+  justify-content: flex-end;
+} 
+.sender-name {
+  margin: 4px 5px 8px 5px;
+  color: rgb(127, 127, 127);
+}
+.chat-list.right .sender-name {
+  text-align: right;
+}
+.msg{
+  overflow-wrap: break-word;
+  padding: 5px 10px 5px 10px;
+  border-radius: 5px;
+  max-width: calc(70%);
+  box-shadow: 0px 0px 8px 0 rgba(0,0,0,0.24),1px 1px 4px 0 rgba(0,0,0,0.16);
+}
+.chat-list.right .msg{
+  float: right;
+  text-align: left;
+  color: rgb(0,0,0);
+  background-color: rgb(158,234,106);
+}
+.chat-list.right .msg:hover{
+  background-color: rgb(153, 228, 102);
+}
+.chat-list.right div{
+  text-align: right;
+}
+.chat-list.left .msg{
+  float: left;
+  text-align: left;
+  color: rgb(0,0,0);
+  background-color: rgb(255,255,255);
+  border: 1px solid rgb(236, 236, 236);
+}
+
+.chat-list.left .msg:hover{
+  background-color: rgb(246, 246, 246);
+}
+/*---------------- chat bubble  End ----------------*/

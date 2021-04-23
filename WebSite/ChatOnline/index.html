@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>线</title>
+  <meta charset="UTF-8">
+</head>
+
+<body>
+  <div class="container">
+    <div class="toolbar">
+      <img src="./static/user1_avatar.jpg" class="my-avatar" />
+    </div>
+    <div class="channel">
+      <div class="channel-search">
+        <img src="./static/search-solid.svg" />
+        <input type="mysearch" id="search" width="130px;" placeholder="搜索" />
+        <span>x</span>
+      </div>
+      <div class="channel-panel">
+        <!-- <div class="channel-list" tabindex="1">  -->
+        <div class="channel-list">
+          <span>频道1</span>
+        </div>
+        <div class="channel-list">
+          <span>频道2</span>
+        </div>
+        <div class="channel-list">
+          <span>频道3</span>
+        </div>
+        <div class="channel-list">
+          <span>频道4</span>
+        </div>
+        <div class="channel-list">
+          <span>频道5</span>
+        </div>
+        <div class="channel-list">
+          <span>频道6</span>
+        </div>
+        <div class="channel-list">
+          <span>频道7</span>
+        </div>
+        <div class="channel-list">
+          <span>频道8</span>
+        </div>
+        <div class="channel-list">
+          <span>频道9</span>
+        </div>
+        <div class="channel-list">
+          <span>频道2</span>
+        </div>
+        <div class="channel-list">
+          <span>频道2</span>
+        </div>
+        <div class="channel-list">
+          <span>频道2</span>
+        </div>
+        <div class="channel-list">
+          <span>频道2</span>
+        </div>
+        <div class="channel-list">
+          <span>频道2</span>
+        </div>
+        <div class="channel-list">
+          <span>频道2</span>
+        </div>
+      </div>
+    </div>
+    <div id="main-chat" class="main-chat">
+      <div class="chat-title">
+        <span>频道1</span>
+      </div>
+      <div class="chat-screen" id="chatscreen">
+        <div>
+          <div class="chat-list left">
+            <img src="./static/avatar.png" />
+            <div>
+              <p class="sender-name">用户aaa</p>
+              <div class="msg">你好</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="chat-list right">
+            <div>
+              <p class="sender-name">qinko</p>
+              <div class="msg">测试</div>
+            </div>
+            <img src="./static/avatar.png" />
+          </div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <textarea id="chatText" placeholder="输入框"></textarea>
+      </div>
+    </div>
+  </div>
+</body>
+<style>
+  @import './css/chatroom.css';
+  @import './css/common.css';
+</style>
+<script>
+  // import { newGuid, commonTool } from './js/commonTool.js';
+
+  var socket = null;
+  var heartBeatInstance = null;
+  var _senderId = null;
+  var _senderName = null;
+  var _targetId = null;
+
+  window.onload = () => {
+    initUserInfo();
+    doConnect();
+    registerChannelEvent();
+    registerSearchInput();
+    registerChatInput();
+  }
+
+  //生成自定义Guid
+  function newGuid() {
+    function S4() {
+      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+    }
+    return (S4() + S4())
+  }
+
+  //注册用户
+  function initUserInfo() {
+    _senderId = localStorage.getItem("_senderId");
+    _senderName = localStorage.getItem("_senderName");
+    _targetId = localStorage.getItem("_targetId");
+
+    if (!_senderId) {
+      localStorage.setItem("_senderId", newGuid());
+    }
+    if (!_senderName) {
+      localStorage.setItem("_senderName", "用户A");
+    }
+    if (!_targetId) {
+      localStorage.setItem("_targetId", "qinko");
+    }
+  }
+
+  //注册【聊天频道】事件
+  function registerChannelEvent() {
+    let clickPropName = "active";
+    let channelList = document.getElementsByClassName("channel-list");
+    Array.prototype.forEach.call(channelList, (ch) => {
+      ch.addEventListener("click", (e) => {
+        let self = e.currentTarget;
+        //重置其他样式状态为未激活
+        Array.prototype.forEach.call(channelList, (ch) => {
+          ch.setAttribute(clickPropName, false);
+        })
+        // self.setAttribute(clickPropName, self.getAttribute(clickPropName) == null ? true : !Boolean(self.getAttribute(clickPropName)));
+        self.setAttribute(clickPropName, true);
+        if (self.children[0])
+          alert(self.children[0].innerText);
+      }, channelList)
+    })
+  }
+
+  //注册【频道搜索框】事件
+  function registerSearchInput() {
+    let search = document.getElementById("search");
+    let searchChannel = document.getElementsByClassName("channel-search")[0];
+    //let searchAfter = window.getComputedStyle(searchChannel, ":after");
+
+    searchChannel.lastElementChild.setAttribute("hidden", true);
+    //添加单击清除文本事件
+    searchChannel.lastElementChild.addEventListener("click", (e) => {
+      let self = e.currentTarget;
+      self.setAttribute("hidden", false)
+      document.getElementById("search").value = "";
+    });
+
+    //输入文字后显示 x
+    search.addEventListener("input", (e) => {
+      let self = e.currentTarget;
+      if (self.value) {
+        searchChannel.lastElementChild.removeAttribute("hidden");
+      } else {
+        searchChannel.lastElementChild.setAttribute("hidden", true);
+      }
+    }, searchChannel);
+
+    search.addEventListener("keypress", (e) => {
+      if (e.key === 'Enter') {
+        let self = e.currentTarget;
+        alert(self.value);
+      }
+    }, searchChannel);
+  }
+
+  //注册【聊天框】事件
+  function registerChatInput() {
+    let _chatText = document.getElementById("chatText");
+    _chatText.addEventListener("keypress", (e) => {
+      if (e.key === 'Enter') {
+        let self = e.currentTarget;
+        addMyMsg(self.value);
+      }
+    }, addMyMsg);
+  }
+
+  //连接webscoket
+  function doConnect() {
+    socket = new WebSocket("wss://api.qinko.club/ws?senderid=" + _senderId + "&targetId=" + _targetId);
+
+    socket.onmessage = function (e) {
+      var msgData = JSON.parse(e.data);
+      console.log(msgData["Msg"]);
+      if (msgData["MsgType"] != 6) {
+        addTheirMsg(msgData["SenderName"], msgData["Msg"]);
+      }
+    }
+
+    socket.onopen = (e) => {
+      heartBeatInstance = setInterval(() => {
+        if (socket.readyState == WebSocket.OPEN) {
+          heartBeat();
+        } else {
+          clearInterval(heartBeatInstance);
+        }
+      }, 30000, heartBeat, socket, heartBeatInstance);
+    }
+
+    socket.onclose = (e) => {
+      //延时重连;
+      setTimeout(() => {
+        doConnect();
+      }, 1000);
+      clearInterval(heartBeatInstance);
+    }
+
+    socket.onerror = (e) => {
+      console.log(e);
+    }
+  }
+
+  //心跳检测机制
+  function heartBeat() {
+    socket.send(JSON.stringify({
+      Msg: '',
+      MsgType: '6',
+      SenderId: _senderId,
+      //SenderName: _senderName,
+      TargetId: _targetId
+    }));
+
+  }
+
+  //websocket发送消息
+  function doSendMsg(msgStr) {
+    if (socket && socket.readyState == WebSocket.OPEN) {
+      socket.send(JSON.stringify({
+        Msg: msgStr,
+        MsgType: '1',
+        SenderId: _senderId,
+        SenderName: _senderName,
+        TargetId: _targetId
+      }));
+    }
+  }
+
+  //把输入框的消息append进聊天框内
+  function addMyMsg(msgStr) {
+    //#region 0. 消息模板
+    // <div>
+    //   <div class="chat-list left">
+    //     <img src="static/avatar.png" />
+    //     <div>
+    //       <p class="sender-name">用户aaa</p>
+    //       <div class="msg">你好</div>
+    //     </div>
+    //   </div>
+    // </div>
+    //#endregion
+
+    //#region 1. 常量
+    let _myAvatar = "./static/avatar.png";
+    let _myName = "qinko";
+    //#endregion
+
+    //#region 2. 定义与赋值
+    let _chatscreen = document.getElementById("chatscreen");
+    let _div = document.createElement("div");
+    let __div = document.createElement("div");
+    let ___div = document.createElement("div");
+    let _img = document.createElement("img");
+    let _name = document.createElement("p");
+    let _msg = document.createElement("div");
+
+    __div.setAttribute("class", "chat-list right");
+    _img.setAttribute("src", _myAvatar);
+    _name.innerText = _myName;
+    _name.setAttribute("class", "sender-name");
+    _msg.innerText = msgStr || "测试1";
+    _msg.setAttribute("class", "msg");
+    //#endregion
+
+    //#region 3. 添加元素
+    ___div.appendChild(_name);
+    ___div.appendChild(_msg);
+    __div.appendChild(___div);
+    __div.appendChild(_img);
+    _div.appendChild(__div);
+    _chatscreen.appendChild(_div);
+    _chatscreen.scrollTop = _chatscreen.scrollHeight;
+    //#endregion
+
+    //#region 4. 发送消息
+
+    doSendMsg(msgStr);
+
+    //#endregion
+
+    let _chatText = document.getElementById("chatText");
+    _chatText.value = "";
+  }
+
+  //把对方的消息append进聊天框内
+  function addTheirMsg(senderName, msgStr) {
+    //#region 1. 常量
+    let _myAvatar = "./static/avatar.png";
+    let _senderName = senderName || "用户a";
+    //#endregion
+
+    //#region 2. 定义与赋值
+    let _chatscreen = document.getElementById("chatscreen");
+    let _div = document.createElement("div");
+    let __div = document.createElement("div");
+    let ___div = document.createElement("div");
+    let _img = document.createElement("img");
+    let _name = document.createElement("p");
+    let _msg = document.createElement("div");
+
+    __div.setAttribute("class", "chat-list left");
+    _img.setAttribute("src", _myAvatar);
+    _name.innerText = _senderName;
+    _name.setAttribute("class", "sender-name");
+    _msg.innerText = msgStr || "测试1";
+    _msg.setAttribute("class", "msg");
+    //#endregion
+
+    //#region 3. 添加元素
+    ___div.appendChild(_name);
+    ___div.appendChild(_msg);
+    __div.appendChild(___div);
+    __div.appendChild(_img);
+    _div.appendChild(__div);
+    _chatscreen.appendChild(_div);
+    _chatscreen.scrollTop = _chatscreen.scrollHeight;
+    //#endregion
+  }
+</script>
+
+</html>

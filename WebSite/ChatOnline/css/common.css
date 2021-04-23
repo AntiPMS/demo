@@ -1,0 +1,28 @@
+input[type="mysearch"]{
+  /* padding: 1px 2px; */
+  box-sizing: border-box;
+  background-color: rgba(216, 216, 216, 1);
+  border: 0px;
+  height: 25px;
+  color: rgba(0, 0, 0, 0.8);
+  border-radius: 5px;
+}
+input[type="mysearch"]::placeholder{
+  color: rgb(129,129,129,1);
+  padding-left: 6px;
+}
+
+textarea{
+  font-family:system-ui;
+  font-size: 15px ;
+  height: calc(90%);
+  width: calc(99%);
+  text-align: left;
+  resize: none;
+  outline: none;
+  border: 0px;
+}
+textarea::placeholder{
+  color: rgb(129,129,129,1);
+  padding-left: 6px;
+}
