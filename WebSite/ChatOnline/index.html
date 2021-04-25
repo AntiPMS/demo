@@ -4,6 +4,8 @@
 <head>
   <title>线</title>
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="./css/chatroom.css">
+  <link rel="stylesheet" href="./css/common.css">
 </head>
 
 <body>
@@ -96,10 +98,6 @@
     </div>
   </div>
 </body>
-<style>
-  @import './css/chatroom.css';
-  @import './css/common.css';
-</style>
 <script>
   // import { newGuid, commonTool } from './js/commonTool.js';
 
@@ -155,8 +153,8 @@
         })
         // self.setAttribute(clickPropName, self.getAttribute(clickPropName) == null ? true : !Boolean(self.getAttribute(clickPropName)));
         self.setAttribute(clickPropName, true);
-        if (self.children[0])
-          alert(self.children[0].innerText);
+        //if (self.children[0])
+        //alert(self.children[0].innerText);
       }, channelList)
     })
   }
@@ -188,7 +186,7 @@
     search.addEventListener("keypress", (e) => {
       if (e.key === 'Enter') {
         let self = e.currentTarget;
-        alert(self.value);
+        //alert(self.value);
       }
     }, searchChannel);
   }
