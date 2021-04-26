@@ -72,31 +72,19 @@
       <div class="chat-title">
         <span>频道1</span>
       </div>
-      <div class="chat-screen" id="chatscreen">
-        <div>
-          <div class="chat-list left">
-            <img src="./static/avatar.png" />
-            <div>
-              <p class="sender-name">用户aaa</p>
-              <div class="msg">你好</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="chat-list right">
-            <div>
-              <p class="sender-name">qinko</p>
-              <div class="msg">测试</div>
-            </div>
-            <img src="./static/avatar.png" />
-          </div>
-        </div>
-      </div>
+      <div id="chatscreen" class="chat-screen"></div>
       <div class="chat-input">
         <textarea id="chatText" placeholder="输入框"></textarea>
       </div>
     </div>
   </div>
+
+  <!-- 放大看图 Start-->
+  <div id="imgBackground" class="img-container-background">
+    <img id="bigImg" src="" />
+  </div>
+  <!-- 放大看图 End-->
+
 </body>
 <script>
   // import { newGuid, commonTool } from './js/commonTool.js';
@@ -106,6 +94,50 @@
   var _senderId = null;
   var _senderName = null;
   var _targetId = null;
+  var _remainHisMsgCount = 0;
+  var _myAvatar = "./static/user1_avatar.jpg";
+
+  //#region  调接口
+  const apiUrl = "https://api.qinko.club";
+
+  //读取历史消息
+  function getHisMsg() {
+    let requestUrl = apiUrl + "/api/Users/GetUserHisChatMsgBySendDateDecreasing";
+    let requestOption = {
+      method: 'get'
+    };
+    requestUrl += "?lastSendDate=" + new Date().format("yyyy-MM-dd hh:mm:ss.S")
+      + "&targetId=" + _targetId
+      + "&num=" + 20
+      + "&userId=" + _senderId;
+    fetch(requestUrl, requestOption).then(function (data) {
+      // text()方法属于fetchAPI的一部分，它返回一个Promise实例对象，用于获取后台返回的数据
+      return data.text();
+    }).then(function (data) {
+      // 在这个then里面我们能拿到最终的数据  
+      let result = JSON.parse(data);
+      //如果返回状态是200
+      if (result && result["resultStatus"] == 200) {
+        //把历史消息添加到聊天框
+        Array.prototype.forEach.call(result["resultData"], (msg) => {
+          //区分自己与别人的消息
+          if (msg["senderId"] == _senderId) {
+            addMyMsg(msg["msg"], msg["msgType"]);
+          } else {
+            addTheirMsg(msg["senderName"], msg["msg"], msg["msgType"]);
+          }
+        })
+      }
+    }).then(() => {
+      //图片加载有延迟,设置定时滚动条拉至最下
+      setTimeout(() => {
+        let _chatscreen = document.getElementById("chatscreen");
+        if (_chatscreen)
+          _chatscreen.scrollTop = _chatscreen.scrollHeight;
+      }, 1000)
+    })
+  }
+  //#endregion
 
   window.onload = () => {
     initUserInfo();
@@ -113,7 +145,23 @@
     registerChannelEvent();
     registerSearchInput();
     registerChatInput();
+    getHisMsg();
   }
+
+  //图片注册点击事件
+  document.getElementById("chatscreen").addEventListener("click", (e) => {
+    let clickElement = e.target;
+    if (clickElement.nodeName == "IMG") {
+      showImgContainer(clickElement.src);
+    }
+  })
+  //注册图片显示后, 图片外单击隐藏事件
+  document.addEventListener("click", (e) => {
+    let clickElement = e.target;
+    if (clickElement.nodeName != "IMG") {
+      hiddenImgContainer();
+    }
+  })
 
   //生成自定义Guid
   function newGuid() {
@@ -131,12 +179,15 @@
 
     if (!_senderId) {
       localStorage.setItem("_senderId", newGuid());
+      _targetId = localStorage.getItem("_senderId");
     }
     if (!_senderName) {
-      localStorage.setItem("_senderName", "用户A");
+      localStorage.setItem("_senderName", "用户" + _targetId);
+      _targetId = localStorage.getItem("_senderName");
     }
     if (!_targetId) {
-      localStorage.setItem("_targetId", "qinko");
+      localStorage.setItem("_targetId", "qinko-ch1");
+      _targetId = localStorage.getItem("_targetId");
     }
   }
 
@@ -155,8 +206,9 @@
         self.setAttribute(clickPropName, true);
         //if (self.children[0])
         //alert(self.children[0].innerText);
-      }, channelList)
+      }, channelList, _targetId)
     })
+
   }
 
   //注册【频道搜索框】事件
@@ -197,9 +249,10 @@
     _chatText.addEventListener("keypress", (e) => {
       if (e.key === 'Enter') {
         let self = e.currentTarget;
-        addMyMsg(self.value);
+        doSendMsg(self.value, 1);
+        addMyMsg(self.value, 1);
       }
-    }, addMyMsg);
+    }, addMyMsg, doSendMsg);
   }
 
   //连接webscoket
@@ -208,9 +261,8 @@
 
     socket.onmessage = function (e) {
       var msgData = JSON.parse(e.data);
-      console.log(msgData["Msg"]);
       if (msgData["MsgType"] != 6) {
-        addTheirMsg(msgData["SenderName"], msgData["Msg"]);
+        addTheirMsg(msgData["SenderName"], msgData["Msg"], msgData["MsgType"]);
       }
     }
 
@@ -250,11 +302,11 @@
   }
 
   //websocket发送消息
-  function doSendMsg(msgStr) {
+  function doSendMsg(msgStr, msgType) {
     if (socket && socket.readyState == WebSocket.OPEN) {
       socket.send(JSON.stringify({
         Msg: msgStr,
-        MsgType: '1',
+        MsgType: msgType,
         SenderId: _senderId,
         SenderName: _senderName,
         TargetId: _targetId
@@ -263,25 +315,8 @@
   }
 
   //把输入框的消息append进聊天框内
-  function addMyMsg(msgStr) {
-    //#region 0. 消息模板
-    // <div>
-    //   <div class="chat-list left">
-    //     <img src="static/avatar.png" />
-    //     <div>
-    //       <p class="sender-name">用户aaa</p>
-    //       <div class="msg">你好</div>
-    //     </div>
-    //   </div>
-    // </div>
-    //#endregion
-
-    //#region 1. 常量
-    let _myAvatar = "./static/avatar.png";
-    let _myName = "qinko";
-    //#endregion
-
-    //#region 2. 定义与赋值
+  function addMyMsg(msgStr, msgType) {
+    //#region 1. 定义与赋值
     let _chatscreen = document.getElementById("chatscreen");
     let _div = document.createElement("div");
     let __div = document.createElement("div");
@@ -292,13 +327,20 @@
 
     __div.setAttribute("class", "chat-list right");
     _img.setAttribute("src", _myAvatar);
-    _name.innerText = _myName;
+    _name.innerText = _senderName;
     _name.setAttribute("class", "sender-name");
-    _msg.innerText = msgStr || "测试1";
-    _msg.setAttribute("class", "msg");
+
+    if (msgType == 1) {
+      _msg.innerText = msgStr;
+      _msg.setAttribute("class", "msg");
+    } else if (msgType == 2) {
+      _msg = document.createElement("img");
+      _msg.setAttribute("class", "msg-img");
+      _msg.setAttribute("src", msgStr);
+    }
     //#endregion
 
-    //#region 3. 添加元素
+    //#region 2. 添加元素
     ___div.appendChild(_name);
     ___div.appendChild(_msg);
     __div.appendChild(___div);
@@ -307,19 +349,12 @@
     _chatscreen.appendChild(_div);
     _chatscreen.scrollTop = _chatscreen.scrollHeight;
     //#endregion
-
-    //#region 4. 发送消息
-
-    doSendMsg(msgStr);
-
-    //#endregion
-
     let _chatText = document.getElementById("chatText");
     _chatText.value = "";
   }
 
   //把对方的消息append进聊天框内
-  function addTheirMsg(senderName, msgStr) {
+  function addTheirMsg(senderName, msgStr, msgType) {
     //#region 1. 常量
     let _myAvatar = "./static/avatar.png";
     let _senderName = senderName || "用户a";
@@ -338,20 +373,68 @@
     _img.setAttribute("src", _myAvatar);
     _name.innerText = _senderName;
     _name.setAttribute("class", "sender-name");
-    _msg.innerText = msgStr || "测试1";
-    _msg.setAttribute("class", "msg");
+    //text文本=1, 图片=2, 语音=3
+    if (msgType == 1) {
+      _msg.innerText = msgStr;
+      _msg.setAttribute("class", "msg");
+    } else if (msgType == 2) {
+      _msg = document.createElement("img");
+      _msg.setAttribute("class", "msg-img");
+      _msg.setAttribute("src", msgStr);
+    }
     //#endregion
 
     //#region 3. 添加元素
     ___div.appendChild(_name);
     ___div.appendChild(_msg);
-    __div.appendChild(___div);
     __div.appendChild(_img);
+    __div.appendChild(___div);
     _div.appendChild(__div);
     _chatscreen.appendChild(_div);
     _chatscreen.scrollTop = _chatscreen.scrollHeight;
     //#endregion
   }
+
+  //#region 公共方法
+  Date.prototype.format = function (fmt) {
+    var o = {
+      "M+": this.getMonth() + 1,                 //月份 
+      "d+": this.getDate(),                    //日 
+      "h+": this.getHours(),                   //小时 
+      "m+": this.getMinutes(),                 //分 
+      "s+": this.getSeconds(),                 //秒 
+      "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+      "S": this.getMilliseconds()             //毫秒 
+    };
+    if (/(y+)/.test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    }
+    for (var k in o) {
+      if (new RegExp("(" + k + ")").test(fmt)) {
+        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+      }
+    }
+    return fmt;
+  }
+  //#endregion
+
+  //#region 查看大图方法
+  function showImgContainer(imgSrc) {
+    let imgBackground = document.getElementById("imgBackground");
+    let bigImg = document.getElementById("bigImg");
+    if (imgBackground) {
+      imgBackground.style.visibility = "visible";
+      bigImg.setAttribute("src", imgSrc);
+    }
+  }
+  function hiddenImgContainer() {
+    let imgBackground = document.getElementById("imgBackground");
+    if (imgBackground) {
+      imgBackground.style.visibility = "hidden";
+    }
+  }
+  //#endregion
+
 </script>
 
 </html>

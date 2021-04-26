@@ -210,10 +210,14 @@ body {
 .chat-list{
   margin-top: 5px;
 }
+.chat-list > div{
+  max-width: calc(70%);
+} 
 .chat-list > img {
   margin: 15px 5px 0 5px;
   max-width: 35px;
   max-height: 35px;
+  border-radius: 2px;
 }
 .chat-list.left{
   display: flex;
@@ -234,8 +238,21 @@ body {
   overflow-wrap: break-word;
   padding: 5px 10px 5px 10px;
   border-radius: 5px;
-  max-width: calc(70%);
   box-shadow: 0px 0px 8px 0 rgba(0,0,0,0.24),1px 1px 4px 0 rgba(0,0,0,0.16);
+}
+.msg-img{
+  padding: 0px 0px 0px 0px;
+  /* border-radius: 5px; */
+  max-height: 350px;
+  max-width: calc(40%);
+  border-radius: 2px;
+  cursor: pointer;
+  /* box-shadow: 0px 0px 8px 0 rgba(0,0,0,0.24),1px 1px 4px 0 rgba(0,0,0,0.16); */
+}
+
+/* right chat bubble */
+.chat-list.right div{
+  text-align: right;
 }
 .chat-list.right .msg{
   float: right;
@@ -246,9 +263,8 @@ body {
 .chat-list.right .msg:hover{
   background-color: rgb(153, 228, 102);
 }
-.chat-list.right div{
-  text-align: right;
-}
+
+/* left chat bubble */
 .chat-list.left .msg{
   float: left;
   text-align: left;
@@ -256,8 +272,32 @@ body {
   background-color: rgb(255,255,255);
   border: 1px solid rgb(236, 236, 236);
 }
-
 .chat-list.left .msg:hover{
   background-color: rgb(246, 246, 246);
 }
+
 /*---------------- chat bubble  End ----------------*/
+
+/*----------------  放大看图 Start   ----------------*/
+.img-container-background{
+  visibility: hidden;  /* visible */
+  box-sizing: border-box;
+  top:0;
+  left:0;
+  width: calc(100%);
+  height: calc(100%);
+  position:fixed;
+  background-color: rgba(0,0,0,0.80);
+
+  display: flex;
+  justify-content: center; 
+  align-items: center;     
+}
+.img-container-background > img {
+  max-width: calc(90%);
+  max-height: calc(90%);
+  border: 1px solid rgba(65, 64, 64, 0.5);
+  border-radius: 3px;
+  box-shadow: 0px 0px 20px 0 rgba(0,0,0,0.24),2px 2px 16px 0 rgba(0,0,0,0.16);
+} 
+/*----------------  放大看图 End   ----------------*/
