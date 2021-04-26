@@ -249,8 +249,12 @@
     _chatText.addEventListener("keypress", (e) => {
       if (e.key === 'Enter') {
         let self = e.currentTarget;
-        doSendMsg(self.value, 1);
-        addMyMsg(self.value, 1);
+        if (self.value && self.value.trim() && self.value.length > 0) {
+          doSendMsg(self.value, 1);
+          addMyMsg(self.value, 1);
+        }
+        self.value = "";
+        e.preventDefault();//阻止事件冒泡，以防textarea输入回车字符
       }
     }, addMyMsg, doSendMsg);
   }
@@ -349,8 +353,6 @@
     _chatscreen.appendChild(_div);
     _chatscreen.scrollTop = _chatscreen.scrollHeight;
     //#endregion
-    let _chatText = document.getElementById("chatText");
-    _chatText.value = "";
   }
 
   //把对方的消息append进聊天框内
