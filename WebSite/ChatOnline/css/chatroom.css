@@ -209,6 +209,7 @@ body {
 /*---------------- chat bubble Start ----------------*/
 .chat-list{
   margin-top: 5px;
+  z-index: -1;
 }
 .chat-list > div{
   max-width: calc(70%);
@@ -222,11 +223,11 @@ body {
 .chat-list.left{
   display: flex;
   justify-content: flex-start;
-} 
+}
 .chat-list.right{
   display: flex;
   justify-content: flex-end;
-} 
+}
 .sender-name {
   margin: 4px 5px 8px 5px;
   color: rgb(127, 127, 127);

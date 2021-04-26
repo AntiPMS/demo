@@ -181,14 +181,11 @@
       localStorage.setItem("_senderId", newGuid());
       _targetId = localStorage.getItem("_senderId");
     }
-    if (!_senderName) {
-      localStorage.setItem("_senderName", "用户" + _targetId);
-      _targetId = localStorage.getItem("_senderName");
-    }
-    if (!_targetId) {
-      localStorage.setItem("_targetId", "qinko-ch1");
-      _targetId = localStorage.getItem("_targetId");
-    }
+    localStorage.setItem("_senderName", "用户" + _targetId);
+    _targetId = localStorage.getItem("_senderName");
+
+    localStorage.setItem("_targetId", "qinko");
+    _targetId = localStorage.getItem("_targetId");
   }
 
   //注册【聊天频道】事件
