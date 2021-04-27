@@ -54,11 +54,7 @@
       <div class="chat-title">
         <span>频道1</span>
       </div>
-      <div id="chatscreen" class="chat-screen">
-        <div class="chat-list">
-          <div>11点22分</div>
-        </div>
-      </div>
+      <div id="chatscreen" class="chat-screen"></div>
       <div id="chatTool" class="chat-tool">
         <button id="face" class="chat-tool-face">😀</button>
       </div>
@@ -68,11 +64,11 @@
     </div>
   </div>
 
-  <!-- 放大看图 Start-->
+  <!-- 查看缩略图 Start-->
   <div id="imgBackground" class="img-container-background">
     <img id="bigImg" src="" />
   </div>
-  <!-- 放大看图 End-->
+  <!-- 查看缩略图 End-->
 
 </body>
 <script>
@@ -111,9 +107,9 @@
         Array.prototype.forEach.call(result["resultData"], (msg) => {
           //区分自己与别人的消息
           if (msg["senderId"] == _senderId) {
-            addMyMsg(msg["msg"], msg["msgType"]);
+            addMyMsg(msg["msg"], msg["msgType"], msg["sendDate"]);
           } else {
-            addTheirMsg(msg["senderName"], msg["msg"], msg["msgType"]);
+            addTheirMsg(msg["senderName"], msg["msg"], msg["msgType"], msg["sendDate"]);
           }
         })
       }
@@ -240,7 +236,7 @@
         let self = e.currentTarget;
         if (self.value && self.value.trim() && self.value.length > 0) {
           doSendMsg(self.value, 1);
-          addMyMsg(self.value, 1);
+          addMyMsg(self.value, 1, new Date().format("hh:mm:ss"));
         }
         self.value = "";
         e.preventDefault();//阻止事件冒泡，以防textarea输入回车字符
@@ -255,7 +251,7 @@
     socket.onmessage = function (e) {
       var msgData = JSON.parse(e.data);
       if (msgData["MsgType"] != 6) {
-        addTheirMsg(msgData["SenderName"], msgData["Msg"], msgData["MsgType"]);
+        addTheirMsg(msgData["SenderName"], msgData["Msg"], msgData["MsgType"], msgData["SendDate"]);
       }
     }
 
@@ -308,13 +304,14 @@
   }
 
   //把输入框的消息append进聊天框内
-  function addMyMsg(msgStr, msgType) {
+  function addMyMsg(msgStr, msgType, sendDate) {
     //#region 1. 定义与赋值
     let _chatscreen = document.getElementById("chatscreen");
     let _div = document.createElement("div");
     let __div = document.createElement("div");
     let ___div = document.createElement("div");
     let _img = document.createElement("img");
+    let _time = document.createElement("p");
     let _name = document.createElement("p");
     let _msg = document.createElement("div");
 
@@ -334,10 +331,18 @@
     //#endregion
 
     //#region 2. 添加元素
+    if (sendDate) {
+      try {
+        _time.innerText = new Date(sendDate).format("yyyy/MM/dd hh:mm:ss");
+        _time.setAttribute("class", "send-date right");
+        _div.appendChild(_time);
+      } catch { }
+    }
     ___div.appendChild(_name);
     ___div.appendChild(_msg);
     __div.appendChild(___div);
     __div.appendChild(_img);
+    addTimeBar(sendDate)
     _div.appendChild(__div);
     _chatscreen.appendChild(_div);
     if (_chatscreen && _chatscreen.children)
@@ -348,7 +353,7 @@
   }
 
   //把对方的消息append进聊天框内
-  function addTheirMsg(senderName, msgStr, msgType) {
+  function addTheirMsg(senderName, msgStr, msgType, sendDate) {
     //#region 1. 常量
     let _myAvatar = "./static/avatar.png";
     let _senderName = senderName || "用户a";
@@ -360,6 +365,7 @@
     let __div = document.createElement("div");
     let ___div = document.createElement("div");
     let _img = document.createElement("img");
+    let _time = document.createElement("p");
     let _name = document.createElement("p");
     let _msg = document.createElement("div");
 
@@ -379,17 +385,54 @@
     //#endregion
 
     //#region 3. 添加元素
+
+    if (sendDate) {
+      try {
+        _time.innerText = new Date(sendDate).format("yyyy/MM/dd hh:mm:ss");
+        _time.setAttribute("class", "send-date left");
+        _div.appendChild(_time);
+      } catch { }
+    }
     ___div.appendChild(_name);
     ___div.appendChild(_msg);
     __div.appendChild(_img);
     __div.appendChild(___div);
     _div.appendChild(__div);
+    addTimeBar(sendDate)
     _chatscreen.appendChild(_div);
     if (_chatscreen && _chatscreen.children)
       _chatscreen.children[_chatscreen.children.length - 1].scrollIntoView({
         behavior: "smooth"
       })
     //#endregion
+  }
+
+  //添加时间分割线
+  function addTimeBar(sendDate) {
+    let _chatscreen = document.getElementById("chatscreen");
+    //判断前后时间差 添加时间分割线
+    let frontMsg = _chatscreen.lastChild;
+    if (frontMsg && frontMsg.firstElementChild && frontMsg.firstElementChild.innerText) {
+      try {
+        let _currentSendDate = new Date(sendDate);
+        let _frontSendDate = new Date(frontMsg.firstElementChild.innerText);
+        if (((_currentSendDate - _frontSendDate) / (1000 * 60 * 10)) > 1) {
+          let _div = document.createElement("div");
+          let __div = document.createElement("div");
+          _div.setAttribute("class", "chat-list timebar");
+          //今天内只显示时分秒
+          if (_currentSendDate.format("yyyy-MM-dd") == new Date().format("yyyy-MM-dd")
+            && _currentSendDate.format("yyyy-MM-dd") == _frontSendDate.format("yyyy-MM-dd")) {
+            __div.innerText = new Date(sendDate).format("hh:mm:ss");
+          }
+          else {
+            __div.innerText = new Date(sendDate).format("yyyy/MM/dd hh:mm:ss");
+          }
+          _div.appendChild(__div);
+          _chatscreen.appendChild(_div);
+        }
+      } catch { }
+    }
   }
 
   //#region 公共方法
@@ -415,7 +458,7 @@
   }
   //#endregion
 
-  //#region 查看大图方法
+  //#region 查看缩略图方法
   function showImgContainer(imgSrc) {
     let imgBackground = document.getElementById("imgBackground");
     let bigImg = document.getElementById("bigImg");
@@ -428,6 +471,7 @@
     let imgBackground = document.getElementById("imgBackground");
     if (imgBackground) {
       imgBackground.style.visibility = "hidden";
+      bigImg.setAttribute("src", "");
     }
   }
   //#endregion
