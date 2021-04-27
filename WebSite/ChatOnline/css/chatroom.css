@@ -114,6 +114,11 @@ body {
 { 
   background-color: rgba(173, 172, 172, 0.8);  
 } 
+.channel-panel::-webkit-scrollbar-track  
+{  
+  border-radius: 10px;  
+  background-color: rgb(222, 222, 222);  
+}  
 /* 定义滚动条滑块 鼠标出入的隐藏与显示 End */
 .channel-list{
   display: flex;
@@ -163,16 +168,18 @@ body {
 .chat-title {
   font-size: 20px;
   padding: 10px 0 10px 15px;
-  height: calc(10%);
+  height: calc(8%);
   background-color: rgb(245,245,245);
   border-width: 0px 0px 1px 0px;
   border-style: solid;
   border-color: rgba(0,0,0,0.16);
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
 } 
 .chat-screen {
   padding: 10px;
-  height: calc(70%);
+  height: calc(67%);
   background-color: rgb(245,245,245);
   box-sizing: border-box;
   overflow: hidden scroll;
@@ -186,12 +193,28 @@ body {
 { 
   background-color: rgba(173, 172, 172, 0.8);  
 } 
+.chat-tool{
+  padding: 5px;
+  box-sizing: border-box;
+  position: relative;
+  height: calc(5%);
+  background-color: rgba(255, 255, 255, 0.8);  
+  border-width: 1px 0px 0px 0px;
+  border-style: solid;
+  border-color: rgba(0,0,0,0.12);
+  z-index: 1;
+}
+.chat-tool > button{
+  background-color: rgba(255, 255, 255, 0.2);  
+  border-width: 0px;
+  cursor: pointer;
+}
 .chat-input{
   height: calc(20%);
   box-sizing: border-box;
   border-width: 1px 0px 0px 0px;
   border-style: solid;
-  border-color: rgba(0,0,0,0.16);
+  border-color: rgba(0,0,0,0.06);
   margin: 0px;
   padding-left: 6px;
   overflow: hidden scroll;
@@ -207,28 +230,59 @@ body {
 } 
 /*---------------- chat main End ----------------*/
 /*---------------- chat bubble Start ----------------*/
+@keyframes showbubble {
+  from {
+    left : -5px;
+    max-width: calc(50%);
+    bottom: -5px;
+    opacity: 0.5;
+  }
+  to {
+    left:0px;
+    max-width: calc(70%);
+    bottom: 0px;
+    opacity: 1;
+  }
+}
 .chat-list{
   margin-top: 5px;
   z-index: -1;
 }
 .chat-list > div{
+  bottom: 0px;
+  position: relative;
   max-width: calc(70%);
+  -moz-animation: showbubble 0.2s;
+  -webkit-animation: showbubble 0.2s;
+  animation: showbubble 0.2s;
 } 
-.chat-list > img {
+.chat-list > img{
+  bottom: 0px;
+  position: relative;
   margin: 15px 5px 0 5px;
   max-width: 35px;
   max-height: 35px;
   border-radius: 2px;
+
+  -moz-animation: showbubble 0.2s;
+  -webkit-animation: showbubble 0.2s;
+  animation: showbubble 0.2s;
+} 
+.chat-list > .timebar{
+  display: flex;
 }
 .chat-list.left{
   display: flex;
   justify-content: flex-start;
+  /* align-items: flex-end; */
 }
 .chat-list.right{
   display: flex;
   justify-content: flex-end;
+  /* align-items: flex-end; */
 }
 .sender-name {
+  font-size: 14px;
   margin: 4px 5px 8px 5px;
   color: rgb(127, 127, 127);
 }
@@ -243,12 +297,11 @@ body {
 }
 .msg-img{
   padding: 0px 0px 0px 0px;
-  /* border-radius: 5px; */
   max-height: 350px;
   max-width: calc(40%);
-  border-radius: 2px;
+  border-radius: 3px;
   cursor: pointer;
-  /* box-shadow: 0px 0px 8px 0 rgba(0,0,0,0.24),1px 1px 4px 0 rgba(0,0,0,0.16); */
+  box-shadow: 0px 0px 8px 0 rgba(0,0,0,0.24),1px 1px 4px 0 rgba(0,0,0,0.16);
 }
 
 /* right chat bubble */
@@ -280,6 +333,23 @@ body {
 /*---------------- chat bubble  End ----------------*/
 
 /*----------------  放大看图 Start   ----------------*/
+/* 图片容器动画 */
+@keyframes showcontainer {
+  from{
+    opacity: 0;
+  }
+  to{
+    opacity: 1;
+  }
+}
+@keyframes hidecontainer {
+  from{
+    opacity: 1;
+  }
+  to{
+    opacity: 0;
+  }
+}
 .img-container-background{
   visibility: hidden;  /* visible */
   box-sizing: border-box;
@@ -292,13 +362,61 @@ body {
 
   display: flex;
   justify-content: center; 
-  align-items: center;     
+  align-items: center;
+
+  -webkit-transition: 0.8s;
+  -moz-transition: 0.8s;
+  transition: 0.8s;
+  
+  -webkit-animation: hidecontainer 0.8s;
+  -moz-animation: hidecontainer 0.8s;
+  animation: hidecontainer 0.8s;
+}
+.img-container-background[style="visibility: visible;"]{
+  -webkit-animation: showcontainer 0.8s;
+  -moz-animation: showcontainer 0.8s;
+  animation: showcontainer 0.8s;
+}
+/* 图片显示动画 */
+@keyframes showimg {
+  from{
+    top: -20px;
+    opacity: 0;
+  }
+  to{
+    top: 0px;
+    opacity: 1;
+  }
+}
+@keyframes hideimg {
+  0%{
+    top: 0px;
+    opacity: 1;
+  }
+  50%{
+    top: -20px;
+    opacity: 0;
+  }
+  100%{
+    top: 0px;
+    opacity: 0;
+  }
 }
 .img-container-background > img {
   max-width: calc(90%);
   max-height: calc(90%);
   border: 1px solid rgba(65, 64, 64, 0.5);
-  border-radius: 3px;
+  border-radius: 4px;
   box-shadow: 0px 0px 20px 0 rgba(0,0,0,0.24),2px 2px 16px 0 rgba(0,0,0,0.16);
+  position: relative;
+
+  -webkit-animation: hideimg 0.8s;
+  -moz-animation: hideimg 0.8s;
+  animation: hideimg 0.8s;
 } 
+.img-container-background[style="visibility: visible;"] > img {
+  -webkit-animation: showimg 0.8s;
+  -moz-animation: showimg 0.8s;
+  animation: showimg 0.8s;
+}
 /*----------------  放大看图 End   ----------------*/

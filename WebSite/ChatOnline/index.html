@@ -48,31 +48,20 @@
         <div class="channel-list">
           <span>频道9</span>
         </div>
-        <div class="channel-list">
-          <span>频道2</span>
-        </div>
-        <div class="channel-list">
-          <span>频道2</span>
-        </div>
-        <div class="channel-list">
-          <span>频道2</span>
-        </div>
-        <div class="channel-list">
-          <span>频道2</span>
-        </div>
-        <div class="channel-list">
-          <span>频道2</span>
-        </div>
-        <div class="channel-list">
-          <span>频道2</span>
-        </div>
       </div>
     </div>
     <div id="main-chat" class="main-chat">
       <div class="chat-title">
         <span>频道1</span>
       </div>
-      <div id="chatscreen" class="chat-screen"></div>
+      <div id="chatscreen" class="chat-screen">
+        <div class="chat-list">
+          <div>11点22分</div>
+        </div>
+      </div>
+      <div id="chatTool" class="chat-tool">
+        <button id="face" class="chat-tool-face">😀</button>
+      </div>
       <div class="chat-input">
         <textarea id="chatText" placeholder="输入框"></textarea>
       </div>
@@ -132,8 +121,11 @@
       //图片加载有延迟,设置定时滚动条拉至最下
       setTimeout(() => {
         let _chatscreen = document.getElementById("chatscreen");
-        if (_chatscreen)
-          _chatscreen.scrollTop = _chatscreen.scrollHeight;
+        //平滑滚动
+        if (_chatscreen && _chatscreen.children)
+          _chatscreen.children[_chatscreen.children.length - 1].scrollIntoView({
+            behavior: "smooth"
+          })
       }, 1000)
     })
   }
@@ -348,7 +340,10 @@
     __div.appendChild(_img);
     _div.appendChild(__div);
     _chatscreen.appendChild(_div);
-    _chatscreen.scrollTop = _chatscreen.scrollHeight;
+    if (_chatscreen && _chatscreen.children)
+      _chatscreen.children[_chatscreen.children.length - 1].scrollIntoView({
+        behavior: "smooth"
+      })
     //#endregion
   }
 
@@ -390,7 +385,10 @@
     __div.appendChild(___div);
     _div.appendChild(__div);
     _chatscreen.appendChild(_div);
-    _chatscreen.scrollTop = _chatscreen.scrollHeight;
+    if (_chatscreen && _chatscreen.children)
+      _chatscreen.children[_chatscreen.children.length - 1].scrollIntoView({
+        behavior: "smooth"
+      })
     //#endregion
   }
 
@@ -422,8 +420,8 @@
     let imgBackground = document.getElementById("imgBackground");
     let bigImg = document.getElementById("bigImg");
     if (imgBackground) {
-      imgBackground.style.visibility = "visible";
       bigImg.setAttribute("src", imgSrc);
+      imgBackground.style.visibility = "visible";
     }
   }
   function hiddenImgContainer() {
