@@ -81,17 +81,18 @@
   var _targetId = null;
   var _remainHisMsgCount = 0;
   var _myAvatar = "./static/user1_avatar.jpg";
+  var _isChatScreenScrollLocked = false;
 
   //#region  调接口
   const apiUrl = "https://api.qinko.club";
 
   //读取历史消息
-  function getHisMsg() {
+  function getHisMsg(lastSendDate, isTop) {
     let requestUrl = apiUrl + "/api/Users/GetUserHisChatMsgBySendDateDecreasing";
     let requestOption = {
       method: 'get'
     };
-    requestUrl += "?lastSendDate=" + new Date().format("yyyy-MM-dd hh:mm:ss.S")
+    requestUrl += "?lastSendDate=" + lastSendDate
       + "&targetId=" + _targetId
       + "&num=" + 20
       + "&userId=" + _senderId;
@@ -104,25 +105,29 @@
       //如果返回状态是200
       if (result && result["resultStatus"] == 200) {
         //把历史消息添加到聊天框
-        Array.prototype.forEach.call(result["resultData"], (msg) => {
+        Array.prototype.forEach.call(isTop ? result["resultData"].reverse() : result["resultData"], (msg) => {
           //区分自己与别人的消息
           if (msg["senderId"] == _senderId) {
-            addMyMsg(msg["msg"], msg["msgType"], msg["sendDate"]);
+            addMyMsg(msg["msg"], msg["msgType"], msg["sendDate"], isTop);
           } else {
-            addTheirMsg(msg["senderName"], msg["msg"], msg["msgType"], msg["sendDate"]);
+            addTheirMsg(msg["senderName"], msg["msg"], msg["msgType"], msg["sendDate"], isTop);
           }
         })
       }
     }).then(() => {
       //图片加载有延迟,设置定时滚动条拉至最下
-      setTimeout(() => {
-        let _chatscreen = document.getElementById("chatscreen");
-        //平滑滚动
-        if (_chatscreen && _chatscreen.children)
-          _chatscreen.children[_chatscreen.children.length - 1].scrollIntoView({
-            behavior: "smooth"
-          })
-      }, 1000)
+      if (!isTop) {
+        setTimeout(() => {
+          let _chatscreen = document.getElementById("chatscreen");
+          //平滑滚动
+          if (_chatscreen && _chatscreen.children)
+            _chatscreen.children[_chatscreen.children.length - 1].scrollIntoView({
+              behavior: "smooth"
+            })
+        }, 1000)
+      }
+    }).then(() => {
+      _isChatScreenScrollLocked = false;
     })
   }
   //#endregion
@@ -133,7 +138,7 @@
     registerChannelEvent();
     registerSearchInput();
     registerChatInput();
-    getHisMsg();
+    getHisMsg(new Date().format("yyyy-MM-dd hh:mm:ss.S"), false);
   }
 
   //图片注册点击事件
@@ -150,6 +155,19 @@
       hiddenImgContainer();
     }
   })
+
+  //注册滚动上滚加载历史
+  document.getElementById("chatscreen").addEventListener("scroll", (e) => {
+    let _chatscreenSelf = e.target;
+    if (_chatscreenSelf.scrollTop == 0 && !_isChatScreenScrollLocked) {
+      _isChatScreenScrollLocked = true;
+      if (_chatscreenSelf
+        && _chatscreenSelf.firstElementChild
+        && _chatscreenSelf.firstElementChild.firstElementChild.innerText) {
+        getHisMsg(_chatscreenSelf.firstElementChild.firstElementChild.innerText, true);
+      }
+    }
+  });
 
   //生成自定义Guid
   function newGuid() {
@@ -251,7 +269,7 @@
     socket.onmessage = function (e) {
       var msgData = JSON.parse(e.data);
       if (msgData["MsgType"] != 6) {
-        addTheirMsg(msgData["SenderName"], msgData["Msg"], msgData["MsgType"], msgData["SendDate"]);
+        addTheirMsg(msgData["SenderName"], msgData["Msg"], msgData["MsgType"], msgData["SendDate"], false);
       }
     }
 
@@ -304,7 +322,7 @@
   }
 
   //把输入框的消息append进聊天框内
-  function addMyMsg(msgStr, msgType, sendDate) {
+  function addMyMsg(msgStr, msgType, sendDate, isTop) {
     //#region 1. 定义与赋值
     let _chatscreen = document.getElementById("chatscreen");
     let _div = document.createElement("div");
@@ -342,10 +360,15 @@
     ___div.appendChild(_msg);
     __div.appendChild(___div);
     __div.appendChild(_img);
-    addTimeBar(sendDate)
+    addTimeBar(sendDate);
     _div.appendChild(__div);
-    _chatscreen.appendChild(_div);
-    if (_chatscreen && _chatscreen.children)
+    if (isTop) {
+      _chatscreen.insertBefore(_div, _chatscreen.firstChild);
+    }
+    else {
+      _chatscreen.appendChild(_div);
+    }
+    if (!isTop && _chatscreen && _chatscreen.children)
       _chatscreen.children[_chatscreen.children.length - 1].scrollIntoView({
         behavior: "smooth"
       })
@@ -353,7 +376,7 @@
   }
 
   //把对方的消息append进聊天框内
-  function addTheirMsg(senderName, msgStr, msgType, sendDate) {
+  function addTheirMsg(senderName, msgStr, msgType, sendDate, isTop) {
     //#region 1. 常量
     let _myAvatar = "./static/avatar.png";
     let _senderName = senderName || "用户a";
@@ -399,8 +422,13 @@
     __div.appendChild(___div);
     _div.appendChild(__div);
     addTimeBar(sendDate)
-    _chatscreen.appendChild(_div);
-    if (_chatscreen && _chatscreen.children)
+    if (isTop) {
+      _chatscreen.insertBefore(_div, _chatscreen.firstChild);
+    }
+    else {
+      _chatscreen.appendChild(_div);
+    }
+    if (!isTop && _chatscreen && _chatscreen.children)
       _chatscreen.children[_chatscreen.children.length - 1].scrollIntoView({
         behavior: "smooth"
       })
