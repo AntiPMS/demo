@@ -38,7 +38,8 @@
       </div>
       <div id="chatscreen" class="chat-screen"></div>
       <div id="chatTool" class="chat-tool">
-        <button id="imgButton" class="chat-tool-face">😀</button>
+        <label for="imgButton">😀</label>
+        <input type="file" id="imgButton" name="imgButton" class="chat-tool-imgButton"></input>
       </div>
       <div class="chat-input">
         <textarea id="chatText" placeholder="输入框"></textarea>
@@ -120,6 +121,7 @@
     registerChannelEvent();
     registerSearchInput();
     registerChatInput();
+    registerImgButton();
     getHisMsg(new Date().format("yyyy-MM-dd hh:mm:ss.S"), false);
   }
 
@@ -248,18 +250,25 @@
   //注册【图片】事件
   function registerImgButton() {
     let _imgButton = document.getElementById("imgButton");
-    _imgButton.addEventListener("click", (e) => {
-      debugger;
-      // if (e.key === 'Enter') {
-      //   let self = e.currentTarget;
-      //   if (self.value && self.value.trim() && self.value.length > 0) {
-      //     doSendMsg(self.value, 1);
-      //     addMyMsg(self.value, 1, new Date().format("hh:mm:ss"));
-      //   }
-      //   self.value = "";
-      //   e.preventDefault();//阻止事件冒泡，以防textarea输入回车字符
-      // }
-    }, addMyMsg, doSendMsg);
+
+    //图片回调
+    let reader = new FileReader();
+    reader.onload = function (e) {
+      let self = e.target;
+      if (socket && socket.readyState == WebSocket.OPEN) {
+        doSendMsg(self.result, 2);//文件base64串
+        addMyMsg(self.result, 2, new Date().format("hh:mm:ss"));
+      }
+    };
+    _imgButton.addEventListener("change", (e) => {
+      let self = e.target;
+      if (self.files && self.files.length > 0) {
+        for (const file of self.files) {
+          reader.readAsDataURL(file);
+        }
+      }
+      // 以DataURL的形式读取文件:
+    }, addMyMsg, doSendMsg, reader);
   }
 
   //连接webscoket
