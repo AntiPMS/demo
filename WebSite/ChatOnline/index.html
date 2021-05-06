@@ -30,24 +30,6 @@
         <div class="channel-list">
           <span>频道3</span>
         </div>
-        <div class="channel-list">
-          <span>频道4</span>
-        </div>
-        <div class="channel-list">
-          <span>频道5</span>
-        </div>
-        <div class="channel-list">
-          <span>频道6</span>
-        </div>
-        <div class="channel-list">
-          <span>频道7</span>
-        </div>
-        <div class="channel-list">
-          <span>频道8</span>
-        </div>
-        <div class="channel-list">
-          <span>频道9</span>
-        </div>
       </div>
     </div>
     <div id="main-chat" class="main-chat">
@@ -56,7 +38,7 @@
       </div>
       <div id="chatscreen" class="chat-screen"></div>
       <div id="chatTool" class="chat-tool">
-        <button id="face" class="chat-tool-face">😀</button>
+        <button id="imgButton" class="chat-tool-face">😀</button>
       </div>
       <div class="chat-input">
         <textarea id="chatText" placeholder="输入框"></textarea>
@@ -187,8 +169,9 @@
       localStorage.setItem("_senderId", newGuid());
       _targetId = localStorage.getItem("_senderId");
     }
-    localStorage.setItem("_senderName", "用户" + _senderId);
-    _targetId = localStorage.getItem("_senderName");
+
+    localStorage.setItem("_senderName", "用户-" + _senderId);
+    _senderName = localStorage.getItem("_senderName");
 
     localStorage.setItem("_targetId", "qinko");
     _targetId = localStorage.getItem("_targetId");
@@ -259,6 +242,23 @@
         self.value = "";
         e.preventDefault();//阻止事件冒泡，以防textarea输入回车字符
       }
+    }, addMyMsg, doSendMsg);
+  }
+
+  //注册【图片】事件
+  function registerImgButton() {
+    let _imgButton = document.getElementById("imgButton");
+    _imgButton.addEventListener("click", (e) => {
+      debugger;
+      // if (e.key === 'Enter') {
+      //   let self = e.currentTarget;
+      //   if (self.value && self.value.trim() && self.value.length > 0) {
+      //     doSendMsg(self.value, 1);
+      //     addMyMsg(self.value, 1, new Date().format("hh:mm:ss"));
+      //   }
+      //   self.value = "";
+      //   e.preventDefault();//阻止事件冒泡，以防textarea输入回车字符
+      // }
     }, addMyMsg, doSendMsg);
   }
 
