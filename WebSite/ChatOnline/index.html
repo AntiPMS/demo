@@ -239,7 +239,7 @@
         let self = e.currentTarget;
         if (self.value && self.value.trim() && self.value.length > 0) {
           doSendMsg(self.value, 1);
-          addMyMsg(self.value, 1, new Date().format("hh:mm:ss"));
+          addMyMsg(self.value, 1, new Date().format("yyyy/MM/dd hh:mm:ss"));
         }
         self.value = "";
         e.preventDefault();//阻止事件冒泡，以防textarea输入回车字符
@@ -257,7 +257,7 @@
       let self = e.target;
       if (socket && socket.readyState == WebSocket.OPEN) {
         doSendMsg(self.result, 2);//文件base64串
-        addMyMsg(self.result, 2, new Date().format("hh:mm:ss"));
+        addMyMsg(self.result, 2, new Date().format("yyyy/MM/dd hh:mm:ss"));
       }
     };
     _imgButton.addEventListener("change", (e) => {
@@ -369,12 +369,13 @@
     ___div.appendChild(_msg);
     __div.appendChild(___div);
     __div.appendChild(_img);
-    addTimeBar(sendDate);
     _div.appendChild(__div);
     if (isTop) {
       _chatscreen.insertBefore(_div, _chatscreen.firstChild);
+      addTimeBar(sendDate, isTop);
     }
     else {
+      addTimeBar(sendDate, isTop);
       _chatscreen.appendChild(_div);
     }
     if (!isTop && _chatscreen && _chatscreen.children)
@@ -430,11 +431,13 @@
     __div.appendChild(_img);
     __div.appendChild(___div);
     _div.appendChild(__div);
-    addTimeBar(sendDate)
+
     if (isTop) {
       _chatscreen.insertBefore(_div, _chatscreen.firstChild);
+      addTimeBar(sendDate, isTop);
     }
     else {
+      addTimeBar(sendDate, isTop);
       _chatscreen.appendChild(_div);
     }
     if (!isTop && _chatscreen && _chatscreen.children)
@@ -445,15 +448,20 @@
   }
 
   //添加时间分割线
-  function addTimeBar(sendDate) {
+  function addTimeBar(sendDate, isTop) {
     let _chatscreen = document.getElementById("chatscreen");
+    let frontMsg = null;
+    if (isTop) {
+      frontMsg = _chatscreen.firstChild;
+    } else {
+      frontMsg = _chatscreen.lastChild;
+    }
     //判断前后时间差 添加时间分割线
-    let frontMsg = _chatscreen.lastChild;
     if (frontMsg && frontMsg.firstElementChild && frontMsg.firstElementChild.innerText) {
+      let _currentSendDate = new Date(sendDate);
+      let _frontSendDate = new Date(frontMsg.firstElementChild.innerText);
       try {
-        let _currentSendDate = new Date(sendDate);
-        let _frontSendDate = new Date(frontMsg.firstElementChild.innerText);
-        if (((_currentSendDate - _frontSendDate) / (1000 * 60 * 10)) > 1) {
+        if (!isTop && (((_currentSendDate - _frontSendDate) / (1000 * 60 * 10)) > 1)) {
           let _div = document.createElement("div");
           let __div = document.createElement("div");
           _div.setAttribute("class", "chat-list timebar");
@@ -467,6 +475,21 @@
           }
           _div.appendChild(__div);
           _chatscreen.appendChild(_div);
+        }
+        else if (isTop && (((_currentSendDate - _frontSendDate) / (1000 * 60 * 10)) > 1)) {
+          debugger;
+          let _div = document.createElement("div");
+          let __div = document.createElement("div");
+          _div.setAttribute("class", "chat-list timebar");
+          if (_currentSendDate.format("yyyy-MM-dd") == new Date().format("yyyy-MM-dd")
+            && _currentSendDate.format("yyyy-MM-dd") == _frontSendDate.format("yyyy-MM-dd")) {
+            __div.innerText = new Date(sendDate).format("hh:mm:ss");
+          }
+          else {
+            __div.innerText = new Date(sendDate).format("yyyy/MM/dd hh:mm:ss");
+          }
+          _div.appendChild(__div);
+          _chatscreen.insertBefore(_div, _chatscreen.firstChild);
         }
       } catch { }
     }
