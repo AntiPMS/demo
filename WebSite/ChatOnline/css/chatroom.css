@@ -209,7 +209,7 @@ body {
   cursor: pointer;
 }
 .chat-tool-imgButton{
-  /* visibility: hidden; */
+  visibility: hidden;
   display: none;
 }
 .chat-input{
