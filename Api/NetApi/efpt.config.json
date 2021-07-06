@@ -1,0 +1,80 @@
+﻿{
+   "CodeGenerationMode": 0,
+   "ContextClassName": "NetApiContext",
+   "ContextNamespace": "Models",
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": "Models",
+   "OutputContextPath": "Models",
+   "OutputPath": "Models",
+   "ProjectRootNamespace": "NetApi",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "MiraiBotAuthority",
+         "ObjectType": 0
+      },
+      {
+         "Name": "UserMsg",
+         "ObjectType": 0
+      },
+      {
+         "Name": "authorizations",
+         "ObjectType": 0
+      },
+      {
+         "Name": "bookmark",
+         "ObjectType": 0
+      },
+      {
+         "Name": "company",
+         "ObjectType": 0
+      },
+      {
+         "Name": "departments",
+         "ObjectType": 0
+      },
+      {
+         "Name": "menus",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pixiv",
+         "ObjectType": 0
+      },
+      {
+         "Name": "positions",
+         "ObjectType": 0
+      },
+      {
+         "Name": "projects",
+         "ObjectType": 0
+      },
+      {
+         "Name": "pxusers",
+         "ObjectType": 0
+      },
+      {
+         "Name": "users",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": ".NetApi",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": true,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseNoConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false
+}

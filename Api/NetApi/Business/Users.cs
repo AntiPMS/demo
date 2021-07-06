@@ -16,7 +16,7 @@ namespace NetApi.Business
     /// </summary>
     public class Users
     {
-        private readonly NetApiContext _context;
+        private readonly  NetApiContext _context;
 
         #region  构造函数,注入依赖.
         /// <summary>

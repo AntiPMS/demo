@@ -81,7 +81,7 @@ namespace NetApi.Models.View
         ///// <summary>
         ///// 纯文本消息=1、图片=2、系统发送的消息=7
         ///// </summary>
-        //public MsgType msgType { get; set; }
+        //public MiraiMsgType msgType { get; set; }
 
         /// <summary>
         /// 具体消息

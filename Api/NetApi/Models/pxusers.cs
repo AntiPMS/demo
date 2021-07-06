@@ -9,20 +9,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace NetApi.Models
 {
-    /// <summary>
-    /// 菜单
-    /// </summary>
-    public partial class menus
+    public partial class pxusers
     {
-        /// <summary>
-        /// 菜单自增主键
-        /// </summary>
         [Key]
-        public int Id { get; set; }
-        /// <summary>
-        /// 菜单名称
-        /// </summary>
+        public int id { get; set; }
+        public int uid { get; set; }
+        [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public string userName { get; set; }
+        public int latest_id { get; set; }
+        [Required]
+        [StringLength(255)]
+        public string path { get; set; }
     }
 }

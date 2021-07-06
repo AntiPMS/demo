@@ -225,7 +225,6 @@ namespace NetApi.Controllers
             return _wsManage.GetCurrentAll();
         }
 
-
         /// <summary>
         /// 历史消息查询
         /// </summary>

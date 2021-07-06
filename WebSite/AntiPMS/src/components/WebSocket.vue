@@ -141,7 +141,7 @@ export default {
     this.hh()
   },
   destroy: function () {
-    this.socket.onclose()
+    this.socket.close()
   },
   methods: {
     defaultImg (e) {

@@ -47,7 +47,6 @@ namespace NetApi
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
 
             #region 跨域
@@ -65,7 +64,8 @@ namespace NetApi
             services.AddDbContext<NetApiContext>(
                 op =>
                 {
-                    op.UseMySql(Configuration.GetConnectionString("NetApiConnection"));//等价于Configuration["ConnectionStrings:NetApiConnection"]
+                    var serverVersion = new MySqlServerVersion("8.0.25");//new Version(8, 0, 25)
+                    op.UseMySql(Configuration.GetConnectionString("NetApiConnection"), serverVersion);//等价于Configuration["ConnectionStrings:NetApiConnection"]
                     //op.UseLoggerFactory(sqlLogFactory);
                 }
             );
@@ -136,6 +136,10 @@ namespace NetApi
             services.AddSingleton<IWebsocketManager, WebsocketManager>();
             #endregion
 
+            #region 添加cache Redis配置
+            var redisConfig = Configuration.GetSection("RedisConfig");
+            services.AddSingleton(new RedisHelper(redisConfig["ConnectionString"], redisConfig["InstanceName"], Convert.ToInt32(redisConfig["DefaultDB"])));
+            #endregion
         }
 
         /// <summary>
@@ -197,7 +201,7 @@ namespace NetApi
                     }
                 });
             }
-            catch (Exception e)
+            catch
             {
             }
             #endregion

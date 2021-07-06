@@ -24,54 +24,35 @@ namespace NetApi.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql(_conf.GetConnectionString("NetApiConnection"), x => x.ServerVersion("8.0.22-mysql"));
+            optionsBuilder.UseMySql(_conf.GetConnectionString("NetApiConnection"), new MySqlServerVersion("8.0.25"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasCharSet("utf8mb4")
+                .UseCollation("utf8mb4_0900_ai_ci");
+
             modelBuilder.Entity<UserMsg>(entity =>
             {
                 entity.HasComment("用户历史消息表");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("varchar(36)")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.IsRead)
                     .HasDefaultValueSql("'0'")
                     .HasComment("已读：0=未读 1=已读 ");
 
-                entity.Property(e => e.Msg)
-                    .HasColumnType("mediumtext")
-                    .HasComment("消息文本")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-
                 entity.Property(e => e.MsgType).HasComment("消息类型：加入=0  纯文本=1  图片=2  断开连接=9");
 
                 entity.Property(e => e.SendDate)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
                     .HasComment("发送日期");
 
-                entity.Property(e => e.SenderId)
-                    .HasColumnType("varchar(100)")
-                    .HasComment("发送人Id")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                entity.Property(e => e.SenderId).HasComment("发送人Id");
 
                 entity.Property(e => e.SenderName)
-                   .HasColumnType("varchar(100)")
-                   .HasComment("发送人姓名")
-                   .HasCharSet("utf8")
-                   .HasCollation("utf8_general_ci");
+                    .UseCollation("utf8_general_ci")
+                    .HasCharSet("utf8");
 
-                entity.Property(e => e.TargetId)
-                    .HasColumnType("varchar(100)")
-                    .HasComment("接收者Id")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
+                entity.Property(e => e.TargetId).HasComment("接收者Id");
             });
 
             OnModelCreatingPartial(modelBuilder);

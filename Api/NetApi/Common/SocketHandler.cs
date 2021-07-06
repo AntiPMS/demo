@@ -383,7 +383,7 @@ namespace NetApi.Common
                         db.SaveChanges();
                         tran.Commit();
                     }
-                    catch (Exception e)
+                    catch
                     {
                         tran.Rollback();
                     }
@@ -487,7 +487,7 @@ namespace NetApi.Common
                         break;
                 }
             }
-            catch (Exception e)
+            catch
             {
                 isSuccess = false;
             }

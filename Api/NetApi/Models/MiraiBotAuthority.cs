@@ -9,20 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace NetApi.Models
 {
-    /// <summary>
-    /// 菜单
-    /// </summary>
-    public partial class menus
+    public partial class MiraiBotAuthority
     {
-        /// <summary>
-        /// 菜单自增主键
-        /// </summary>
         [Key]
-        public int Id { get; set; }
-        /// <summary>
-        /// 菜单名称
-        /// </summary>
-        [StringLength(100)]
-        public string Name { get; set; }
+        public ulong Id { get; set; }
+        public int QQNumber { get; set; }
     }
 }
